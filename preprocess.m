@@ -42,7 +42,6 @@ function [left,right,samplerate] = preprocess(path)
    % Define common sampling rate
    fs_common = min(fs1, fs2); % Use the lower sampling rate
    dt_common = 1 / fs_common;
-   disp(dt_common)
     
    % Define the common time vector
    t_start = max(min(t1), min(t2));
