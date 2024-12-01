@@ -1,6 +1,5 @@
 function [rsac,lsac,rswj,lswj,rfinish,lfinish,rswjdata,lswjdata,gazer,gazel,gazes] = allsacc4menu(gaze_arrays,position,PLOT)
 
-  
     if nargin>2 && contains(PLOT,'PLOT')
         [rswj,rfinish,rswjdata] = swj4menu(rsac,gazer,"Right" ,'plot');
         title("Right Eye")
