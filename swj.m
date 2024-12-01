@@ -1,4 +1,6 @@
 function [swjs,finish,sac,swjdata,sacc_diff] = swj(sac,gaze,eye,PLOT)
+
+%
     min_ampl = 0.3;
     sacc_similarity = 0.6;
     max_duration = 400;
