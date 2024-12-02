@@ -34,7 +34,7 @@ function [left,right,samplerate] = preprocess(path)
     
    mean_dt1 = mean(dt1);
    mean_dt2 = mean(dt2);
-   disp(mean(dt1))
+   
    % Calculate sampling rates
    fs1 = 1 / mean_dt1;
    fs2 = 1 / mean_dt2;

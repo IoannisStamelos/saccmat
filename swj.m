@@ -1,11 +1,11 @@
 function [swj_onset,swj_finish,swj_data] = swj(sac,time_series)
 
     min_ampl = 0.3;
-    sacc_similarity = 0.6;
-    max_duration = 400;
-    min_duration = 60;
+    sacc_similarity = 1;
+    max_duration = 0.4;
+    min_duration = 0.06;
     t = time_series(:,1);
-    
+   
  
     ampl = sqrt((sac(:,6).^2)+(sac(:,7).^2));
     bigampl = ampl(ampl>min_ampl);
@@ -24,9 +24,8 @@ function [swj_onset,swj_finish,swj_data] = swj(sac,time_series)
     for i = 1:height(sac)-1
         if tsac(i+1,1)-tsac(i,1)<= max_duration && tsac(i+1,1)-tsac(i,1)>= min_duration
             if sac(i,4)*sac(i+1,4)<0
-               if (abs(sac(i,9)-sac(i+1,9))/(sac(i,9)+sac(i+1,9)))<=sacc_similarity
+               if (abs(sac(i,9)-sac(i+1,9))/(sac(i,9)+sac(i+1,9)))<=sacc_similarity                   
                        swj_onset(i) = sac(i,2);
-                       disp(sac(i,2))
                        swj_finish(i) = sac(i+1,1);
                        swj_data(i,:) = sac(i,:);
                        swj_data(i+1,:)= sac(i+1,:);
@@ -38,7 +37,7 @@ function [swj_onset,swj_finish,swj_data] = swj(sac,time_series)
     
    swj_onset = nonzeros(swj_onset);
    swj_finish = nonzeros(swj_finish);
-   disp("2")
+   
 
 end
     
