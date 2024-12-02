@@ -4,13 +4,11 @@ while true
         if isequal(path,0)
             disp('User cancelled. Exiting.');
             break
-        end
-           disp(['File folder: ', path]);
+        else
+            disp(['File folder: ', path]);
             
-           [left,right,samplerate] = preprocess(path);
-           positions =  ["center", "left", "right", "up", "down"];
-
-        pos = find(contains(path, positions,'IgnoreCase',true));
+            [left,right,samplerate] = preprocess(path);
+        pos = find(contains(path, directions));
        [leftsacc, rightsacc, left, right, samples, samplerate] = get_saccade_data(left,right,samplerate);
        
        
@@ -24,8 +22,8 @@ while true
        [BCEA_left,interval_left] = compute_BCEA(left,2);
        [BCEA_right,interval_right] = compute_BCEA(right,2);
        
-       gaze_ellipse(left,BCEA_left,"left",pos)
-       gaze_ellipse(right,BCEA_right,"right",pos)
+       gaze_ellipse(left,BCEA_left,"left")
+       gaze_ellipse(right,BCEA_right,"right")
        
        clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
        
