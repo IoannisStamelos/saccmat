@@ -17,7 +17,8 @@ while true
     
        [swjons_left,swjfin_left,swjdata_left] = swj(leftsacc,left);
        [swjons_right,swjfin_right,swjdata_right] = swj(rightsacc,right);
-       
+       plotswj(left,swjons_left,swjfin_left)
+       plotswj(right,swjons_right,swjfin_right)
        
        clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
        

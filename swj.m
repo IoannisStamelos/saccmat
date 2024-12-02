@@ -1,7 +1,7 @@
 function [swj_onset,swj_finish,swj_data] = swj(sac,time_series)
 
     min_ampl = 0.3;
-    sacc_similarity = 1;
+    sacc_similarity = 0.5;
     max_duration = 0.4;
     min_duration = 0.06;
     t = time_series(:,1);
@@ -34,7 +34,7 @@ function [swj_onset,swj_finish,swj_data] = swj(sac,time_series)
         end
     end
     
-    
+   swj_data = swj_data(~all(swj_data == 0, 2),:);
    swj_onset = nonzeros(swj_onset);
    swj_finish = nonzeros(swj_finish);
    

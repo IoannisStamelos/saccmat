@@ -55,30 +55,32 @@ function [left,right,samplerate] = preprocess(path)
    % Interpolate positions for the second eye
    x2_common = pchip(t2, x2, t_common);
    y2_common = pchip(t2, y2, t_common);
-   figure;
-   subplot(2, 1, 1);
-   hold on;
-   plot(t1, x1, '.', 'DisplayName', 'Original x1');
-   plot(t2, x2, '.', 'DisplayName', 'Original x2');
-   plot(t_common, x1_common, '-', 'DisplayName', 'Interpolated x1');
-   plot(t_common, x2_common, '-', 'DisplayName', 'Interpolated x2');
-   title('Horizontal Position (x)');
-   xlabel('Time (s)');
-   ylabel('Position');
-   legend;
-   grid on;
-
-   subplot(2, 1, 2);
-   hold on;
-   plot(t1, y1, '.', 'DisplayName', 'Original y1');
-   plot(t2, y2, '.', 'DisplayName', 'Original y2');
-   plot(t_common, y1_common, '-', 'DisplayName', 'Interpolated y1');
-   plot(t_common, y2_common, '-', 'DisplayName', 'Interpolated y2');
-   title('Vertical Position (y)');
-   xlabel('Time (s)');
-   ylabel('Position');
-   legend;
-   grid on;
+   % %%
+   % figure;
+   % subplot(2, 1, 1);
+   % hold on;
+   % plot(t1, x1, '.', 'DisplayName', 'Original x1');
+   % plot(t2, x2, '.', 'DisplayName', 'Original x2');
+   % plot(t_common, x1_common, '-', 'DisplayName', 'Interpolated x1');
+   % plot(t_common, x2_common, '-', 'DisplayName', 'Interpolated x2');
+   % title('Horizontal Position (x)');
+   % xlabel('Time (s)');
+   % ylabel('Position');
+   % legend;
+   % grid on;
+   % 
+   % subplot(2, 1, 2);
+   % hold on;
+   % plot(t1, y1, '.', 'DisplayName', 'Original y1');
+   % plot(t2, y2, '.', 'DisplayName', 'Original y2');
+   % plot(t_common, y1_common, '-', 'DisplayName', 'Interpolated y1');
+   % plot(t_common, y2_common, '-', 'DisplayName', 'Interpolated y2');
+   % title('Vertical Position (y)');
+   % xlabel('Time (s)');
+   % ylabel('Position');
+   % legend;
+   % grid on;
+   %%
    left = vertcat(t_common,x1_common,y1_common)';
    right = vertcat(t_common,x2_common,y1_common)';
    samplerate = fs_common;
