@@ -1,0 +1,56 @@
+function gaze_ellipse(time_series, BCEA, eye, pos, k_value)
+    % Define positions of screen points (assuming a specific screen layout)
+    posdegshorz = [0, -23, 23, 0, 0];
+    posdegsvert = [0, 0, 0, 13, -13];
+    
+    % Extract position data and remove buffer data
+    x = time_series(:,2);
+    y = time_series(:,3);
+    t = time_series(:,1);
+
+    % Figure setup
+    figure("Name", "Gaze Ellipse - " + eye + " Eye")
+    title(eye + " Eye")
+    subtitle("BCEA: " + BCEA + " (deg²)")
+    
+    % Find the position of the pointer on the screen
+    pos = find(contains(time_series(:,1), {'center', 'left', 'right', 'up', 'down'}, 'IgnoreCase', true));
+    pointer = scatter(posdegshorz(pos), posdegsvert(pos), 'magenta', 'v', 'filled');
+    
+    % Calculate the BCEA ellipse parameters (standard deviations, correlation)
+    std_hor = std(x);
+    std_ver = std(y);
+    r = corrcoef(x, y);
+    
+    % Calculate the BCEA (Bivariate Contour Ellipse Area)
+    BCEA_radius_x = sqrt(BCEA / (2 * pi * k_value * std_hor * std_ver * sqrt(1 - r(1, 2)^2)));
+    BCEA_radius_y = BCEA_radius_x; % Assuming circular BCEA; modify for elliptical BCEA
+    
+    % Calculate angles for plotting the ellipse (parametric equation)
+    theta = 0 : 0.01 : 2 * pi;
+    x_ellipse = BCEA_radius_x * cos(theta);
+    y_ellipse = BCEA_radius_y * sin(theta);
+    
+    % Rotation matrix for the ellipse
+    x_vec = [1; 0]; % Vector along the x-axis
+    cos_rotation = dot(x_vec, [r(1, 2); 0]) / (norm(x_vec) * norm([r(1, 2); 0])); % Calculate angle
+    rotation = pi / 2 - acos(cos_rotation); % Rotation angle
+    
+    % Create the rotation matrix
+    R = [cos(rotation), -sin(rotation); sin(rotation), cos(rotation)];
+    
+    % Apply the rotation to the ellipse
+    rotated_ellipse = R * [x_ellipse; y_ellipse];
+    
+    % Plot the BCEA ellipse centered at the mean position
+    plot(rotated_ellipse(1, :) + mean(x), rotated_ellipse(2, :) + mean(y), 'r', 'LineWidth', 2);
+    
+    % Plotting the mean gaze point and screen pointer
+    subset = [pointer];
+    legend(subset, ["Screen pointer"]);
+    
+    % Formatting and labels
+    xlabel('Horizontal position (degrees)');
+    ylabel('Vertical position (degrees)');
+    hold off;
+end

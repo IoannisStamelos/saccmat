@@ -9,24 +9,34 @@ while true
             
            [left,right,samplerate] = preprocess(path);
            positions =  ["center", "left", "right", "up", "down"];
-
-        pos = find(contains(path, positions,'IgnoreCase',true));
-       [leftsacc, rightsacc, left, right, samples, samplerate] = get_saccade_data(left,right,samplerate);
+        [~, folderName] = fileparts(path);  % This extracts the last folder or filename
+        disp(folderName)
+           cont = contains(folderName, positions, 'IgnoreCase', true);
+        pos = find(cont);
+        disp(pos)
+        disp(positions(pos))
+       %[leftsacc, rightsacc, left, right, samples, samplerate] = get_saccade_data(left,right,samplerate);
        
        
         
-       [swj_onset_left,swj_finish_left,swjdata_left] = swj(leftsacc,left);
-       [swj_onset_right,swj_finish_right,swjdata_right] = swj(rightsacc,right);
+       %[swj_onset_left,swj_finish_left,swjdata_left] = swj(leftsacc,left);
+       %[swj_onset_right,swj_finish_right,swjdata_right] = swj(rightsacc,right);
        
-       plotswj(left,swj_onset_left,swj_finish_left)
-       plotswj(right,swj_onset_right,swj_finish_right)
+       %plotswj(left,swj_onset_left,swj_finish_left)
+       %plotswj(right,swj_onset_right,swj_finish_right)
        
-       [BCEA_left,interval_left] = compute_BCEA(left,2);
-       [BCEA_right,interval_right] = compute_BCEA(right,2);
-       
-       gaze_ellipse(left,BCEA_left,"left",pos)
-       gaze_ellipse(right,BCEA_right,"right",pos)
-       
+    
+    % Compute BCEA for left and right eyes
+    k_value = 3.079; % Default for 95% confidence interval
+    [BCEA_left, interval_left] = compute_BCEA(left, 2, k_value);
+    [BCEA_right, interval_right] = compute_BCEA(right, 2, k_value);
+    
+    % Plot gaze ellipses and compare areas
+    
+    gaze_ellipse(left, BCEA_left, "left", pos, k_value); % Left eye
+    
+    
+    gaze_ellipse(right, BCEA_right, "right", pos, k_value); % Right eye
        clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
        
        

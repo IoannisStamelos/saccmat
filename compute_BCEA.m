@@ -1,20 +1,22 @@
-function [BCEA,interval] = compute_BCEA(time_series,conf_int)
-buffer = 500;
+function [BCEA, interval] = compute_BCEA(time_series, conf_int, k_value)
+    buffer = 500; % Discard initial samples
 
-k = [1.13943,3.079,5.80914];
-intervals = {'65','95','99.7'};
-
-    x = time_series(:,2);
+    % Extract positions
+    x = time_series(:, 2);
+    y = time_series(:, 3);
     x = x(buffer:end);
-    y = time_series(:,3);
     y = y(buffer:end);
+
+    % Calculate statistics
     std_hor = std(x);
     std_ver = std(y);
-    r = corrcoef(x,y);
-    
-    BCEA = 2*k(conf_int)*pi*std_hor*std_ver*sqrt(1-r(1,2).^2);
-   
+    r = corrcoef(x, y);
+    rho = r(1, 2); % Correlation coefficient
 
-interval = intervals{conf_int};
+    % Compute BCEA
+    BCEA = 2 * k_value * pi * std_hor * std_ver * sqrt(1 - rho^2);
 
+    % Confidence interval labels
+    intervals = {'65', '95', '99.7'};
+    interval = intervals{conf_int};
 end
