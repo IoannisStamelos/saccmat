@@ -1,7 +1,7 @@
 function [swj_onset,swj_finish,swj_data] = swj(sac,time_series)
 
     min_ampl = 0.3;
-    sacc_similarity = 0.5;
+    sacc_similarity = 0.3;
     max_duration = 0.4;
     min_duration = 0.1;
     displacement_ratio = 0.3;
@@ -23,6 +23,7 @@ function [swj_onset,swj_finish,swj_data] = swj(sac,time_series)
     
     for i = 1:height(sac)-1
         if tsac(i+1,1)-tsac(i,1)<= max_duration && tsac(i+1,1)-tsac(i,1)>= min_duration
+            disp(tsac(i+1,1)-tsac(i,1))
            %if abs(sac(i,1)/sac(i+1,2)) <= displacement_ratio
              if sac(i,4)*sac(i+1,4)<0
                if (abs(sac(i,9)-sac(i+1,9))/(sac(i,9)+sac(i+1,9)))<=sacc_similarity                   
