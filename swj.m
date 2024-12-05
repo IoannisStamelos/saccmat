@@ -17,6 +17,7 @@ function [swj_onset,swj_finish,swj_data] = swj(sac,time_series)
     sac = sortrows(sac,1);
     tsac = t(sac(:,1));
     xsac = x(sac(:,1));
+    disp(xsac)
     swj_onset= zeros(1,length(sac));
     swj_finish = swj_onset;
     swj_data = zeros(size(sac));

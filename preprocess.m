@@ -55,7 +55,7 @@ function [left,right,samplerate] = preprocess(path)
    % Interpolate positions for the second eye
    x2_common = pchip(t2, x2, t_common);
    y2_common = pchip(t2, y2, t_common);
-   % %%
+   
    % figure;
    % subplot(2, 1, 1);
    % hold on;
@@ -80,10 +80,11 @@ function [left,right,samplerate] = preprocess(path)
    % ylabel('Position');
    % legend;
    % grid on;
-   %%
+   
    left = vertcat(t_common,x1_common,y1_common)';
    right = vertcat(t_common,x2_common,y1_common)';
    samplerate = fs_common;
+   
 
 
 end 

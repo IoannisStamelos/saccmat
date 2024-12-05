@@ -27,8 +27,8 @@ while true
        [swj_onset_left,swj_finish_left,swjdata_left] = swj(leftsacc,left);
        [swj_onset_right,swj_finish_right,swjdata_right] = swj(rightsacc,right);
        
-       plotswj(left,swj_onset_left,swj_finish_left)
-       plotswj(right,swj_onset_right,swj_finish_right)
+       plotswj(left,swj_onset_left,swj_finish_left,"left")
+       plotswj(right,swj_onset_right,swj_finish_right,"right")
        
     
     % Compute BCEA for left and right eyes

@@ -1,4 +1,4 @@
-function plotswj(time_series,swjons,swjfin,eye)
+function plotswj(time_series,swjons,swjfin)
     t = time_series(:,1);
     if isempty(swjons)
         disp("No SWJs detected.")
@@ -8,7 +8,7 @@ function plotswj(time_series,swjons,swjfin,eye)
         xlabel("seconds")
         ylabel("degrees")
     else 
-        figure('Name','SWJ' + eye)
+        figure('Name','SWJ')
         set(0,'DefaultFigureWindowStyle','docked')
         plot(t,time_series(:,2))
         xlabel("seconds")
@@ -16,8 +16,8 @@ function plotswj(time_series,swjons,swjfin,eye)
         hold on
         xline(t(swjons))
         xline(t(swjfin),'r')
-        yline(mode(time_series(:,2)),'-')
+        line(
         disp("Number of Square Wave Jerks:")
-        disp(numel(swjons))
+        disp(height(swjons))
     end
 end

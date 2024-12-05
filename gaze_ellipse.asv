@@ -1,56 +1,71 @@
 function gaze_ellipse(time_series, BCEA, eye, pos, k_value)
     % Define positions of screen points (assuming a specific screen layout)
-    posdegshorz = [0, -23, 23, 0, 0];
-    posdegsvert = [0, 0, 0, 13, -13];
+    posdegshorz = [0, -23, 23, 0, 0]; % horizontal positions (degrees)
+    posdegsvert = [0, 0, 0, 13, -13]; % vertical positions (degrees)
     
     % Extract position data and remove buffer data
-    x = time_series(:,2);
-    y = time_series(:,3);
-    t = time_series(:,1);
+    x = time_series(:,2); % horizontal gaze positions
+    y = time_series(:,3); % vertical gaze positions
+    t = time_series(:,1); % time points
 
     % Figure setup
     figure("Name", "Gaze Ellipse - " + eye + " Eye")
     title(eye + " Eye")
     subtitle("BCEA: " + BCEA + " (deg²)")
     
-    % Find the position of the pointer on the screen
-    pos = find(contains(time_series(:,1), {'center', 'left', 'right', 'up', 'down'}, 'IgnoreCase', true));
-    pointer = scatter(posdegshorz(pos), posdegsvert(pos), 'magenta', 'v', 'filled');
-    
-    % Calculate the BCEA ellipse parameters (standard deviations, correlation)
-    std_hor = std(x);
-    std_ver = std(y);
+    % Plot the gaze points
+    scatter(x, y, 10, t, 'filled'); % Scatter plot of gaze points colored by time
+    hold on;
+
+    % Calculate the mean gaze point (for center of the ellipse)
+    mean_x = mean(x); 
+    mean_y = mean(y);
+
+    % Compute standard deviations and correlation
+    std_x = std(x);
+    std_y = std(y);
     r = corrcoef(x, y);
+    r = r(1, 2);
+
+    % Compute radii from BCEA formula
+    radii_factor = sqrt(BCEA / (2 * pi * k_value));
+    BCEA_radius_x = radii_factor * std_x * sqrt(1 - r^2);
+    BCEA_radius_y = radii_factor * std_y * sqrt(1 - r^2);
     
-    % Calculate the BCEA (Bivariate Contour Ellipse Area)
-    BCEA_radius_x = sqrt(BCEA / (2 * pi * k_value * std_hor * std_ver * sqrt(1 - r(1, 2)^2)));
-    BCEA_radius_y = BCEA_radius_x; % Assuming circular BCEA; modify for elliptical BCEA
-    
-    % Calculate angles for plotting the ellipse (parametric equation)
+    % Generate the angles for plotting the ellipse
     theta = 0 : 0.01 : 2 * pi;
     x_ellipse = BCEA_radius_x * cos(theta);
     y_ellipse = BCEA_radius_y * sin(theta);
     
-    % Rotation matrix for the ellipse
-    x_vec = [1; 0]; % Vector along the x-axis
-    cos_rotation = dot(x_vec, [r(1, 2); 0]) / (norm(x_vec) * norm([r(1, 2); 0])); % Calculate angle
-    rotation = pi / 2 - acos(cos_rotation); % Rotation angle
+    % Rotate the ellipse based on the correlation coefficient
+    angle = 0.5 * atan2(2 * r * std_x * std_y, std_x^2 - std_y^2);
+    rotation_matrix = [cos(angle), -sin(angle); sin(angle), cos(angle)];
+    rotated_ellipse = rotation_matrix * [x_ellipse; y_ellipse];
     
-    % Create the rotation matrix
-    R = [cos(rotation), -sin(rotation); sin(rotation), cos(rotation)];
+    % Plot the BCEA ellipse centered at the mean gaze position
+    plot(rotated_ellipse(1, :) + mean_x, rotated_ellipse(2, :) + mean_y, 'LineWidth', 1);
     
-    % Apply the rotation to the ellipse
-    rotated_ellipse = R * [x_ellipse; y_ellipse];
+    % Plotting the mean gaze point (center of the BCEA ellipse)
+    scatter(mean_x, mean_y, 'red', 's', 'filled'); % mean gaze point as a red square
     
-    % Plot the BCEA ellipse centered at the mean position
-    plot(rotated_ellipse(1, :) + mean(x), rotated_ellipse(2, :) + mean(y), 'r', 'LineWidth', 2);
+    % Plot the pointer indicating the screen position
+    scatter(posdegshorz(pos), posdegsvert(pos), 'magenta', 'v', 'filled');
     
-    % Plotting the mean gaze point and screen pointer
-    subset = [pointer];
-    legend(subset, ["Screen pointer"]);
+    % Make the axes consistent
+    axis equal; % Ensure that both axes have the same scaling
+    xlim([min(x)-5, max(x)+5]); % Set x-axis limits based on data range
+    ylim([min(y)-5, max(y)+5]); % Set y-axis limits based on data range
+    
+    % Add color bar
+    cbar = colorbar;
+    colormap winter
+    ylabel(cbar, "Time (seconds)");
     
     % Formatting and labels
     xlabel('Horizontal position (degrees)');
     ylabel('Vertical position (degrees)');
+    
+    % Correct legend
+    legend("Gaze Points", "BCEA Ellipse", "Mean Gaze Point", "Screen Pointer");
     hold off;
 end
