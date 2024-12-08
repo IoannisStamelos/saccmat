@@ -1,8 +1,13 @@
-function ellipse3(time_series)
+function ellipse3(time_series, BCEA)
 % Step 1: Compute the mean and covariance matrix
+buffer = 200;
 t = time_series(:,1);
 x = time_series(:,2);
 y = time_series(:,3);
+t = t(buffer:end);
+x = x(buffer:end);  
+y = y(buffer:end);
+
 mu = mean([x, y]);  % Mean of the x and y data
 covMatrix = cov(x, y);  % Covariance matrix of the x and y data
 
@@ -33,9 +38,9 @@ hold on;
 scatter(x, y, 10, t, 'filled');  % Scatter plot of the points
 plot(mu(1) + rotatedEllipseX, mu(2) + rotatedEllipseY, 'r', 'LineWidth', 2);  % Ellipse plot
 axis equal;
-xlabel('X');
-ylabel('Y');
-title(['Gaze Ellipse - Area: ' num2str(ellipse_area, '%.2f') ' (deg²)']);  % Add area to title
+xlabel('Horizontal');
+ylabel('Vertical');
+title(['Gaze Ellipse - Area: ' num2str(ellipse_area, '%.2f') ' (deg²)'], "BCEA: " + BCEA );  % Add area to title
 cbar = colorbar;
 colormap winter
 ylabel(cbar, "Time (seconds)");

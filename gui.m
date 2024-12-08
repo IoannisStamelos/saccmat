@@ -32,7 +32,7 @@ while true
        
     
     % Compute BCEA for left and right eyes
-    k_value = 3.079; % Default for 95% confidence interval
+    k_value = 1.96; % Default for 95% confidence interval
     [BCEA_left, interval_left] = compute_BCEA(left, 2, k_value);
     [BCEA_right, interval_right] = compute_BCEA(right, 2, k_value);
     
@@ -44,8 +44,8 @@ while true
     %gaze_ellipse(right,0.95); % Right eye
     %gaze_density_ellipse(left, "left")
     %gaze_density_ellipse(right, "right")
-    ellipse3(left)
-    ellipse3(right)
+    ellipse3(left, BCEA_left)
+    ellipse3(right, BCEA_right)
 
     [ampl_L,vpeak_L,duration_L] = main_sequence(left,leftsacc,"left");
     [ampl_R,vpeak_R,duration_R] = main_sequence(right,rightsacc,"right");
