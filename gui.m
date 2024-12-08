@@ -38,12 +38,20 @@ while true
     
     % Plot gaze ellipses and compare areas
     
-    gaze_ellipse(left, BCEA_left, "left", pos, k_value); % Left eye
+    %gaze_ellipse(left,0.95); % Left eye
     
     
-    gaze_ellipse(right, BCEA_right, "right", pos, k_value); % Right eye
-    clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
-       
+    %gaze_ellipse(right,0.95); % Right eye
+    %gaze_density_ellipse(left, "left")
+    %gaze_density_ellipse(right, "right")
+    ellipse3(left)
+    ellipse3(right)
+
+    [ampl_L,vpeak_L,duration_L] = main_sequence(left,leftsacc,"left");
+    [ampl_R,vpeak_R,duration_R] = main_sequence(right,rightsacc,"right");
+
+    %clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
+      clear i interval_right interval_left path pos folderName samples  
        
        
       break      

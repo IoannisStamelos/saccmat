@@ -1,10 +1,10 @@
-function [ampl,vpeak,duration] = main_sequence4menu(gaze,sac,eye,position)
+function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye)
     ampl = sqrt(sac(:,6).^2+sac(:,7).^2);
     vpeak = sac(:,3);
-    t = gaze(:,1);
+    t = time_series(:,1);
     duration = t(sac(:,2))-t(sac(:,1));
 
-    figure("Name","Ampl-Dt, " + eye + " eye, Gaze " + position)
+    figure("Name","Ampl-Dt, " + eye + " eye")
     
     scatter(ampl,duration)
     xlabel("Amplitude (deg)")
@@ -17,10 +17,10 @@ function [ampl,vpeak,duration] = main_sequence4menu(gaze,sac,eye,position)
     hold on
     plot(xest, yest, '-b');
   
-    title(eye + " eye, Gaze " + position)
+    title(eye + " eye")
     
        
-    figure("Name","Ampl-Vpeak, " + eye + " eye, Gaze " + position)
+    figure("Name","Ampl-Vpeak, " + eye + " eye")
     scatter(ampl,vpeak)
     xlabel("Amplitude (deg)")
     ylabel("Peak velocity (deg/s)")
@@ -32,5 +32,5 @@ function [ampl,vpeak,duration] = main_sequence4menu(gaze,sac,eye,position)
     hold on
     plot(xest2, yest2, '-b');
   
-    title(eye + " eye, " + position+" position")
+    title(eye + " eye")
 end

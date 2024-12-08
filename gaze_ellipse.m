@@ -1,71 +1,75 @@
-function gaze_ellipse(time_series, BCEA, eye, pos, k_value)
-    % Define positions of screen points (assuming a specific screen layout)
-    posdegshorz = [0, -23, 23, 0, 0]; % horizontal positions (degrees)
-    posdegsvert = [0, 0, 0, 13, -13]; % vertical positions (degrees)
+function gaze_ellipse(data, confidence)
+       % Plots a BCEA ellipse for eye position data
+    % 
+    % Parameters:
+    % data: Nx3 array where columns are [t, x, y]
+    % confidence: Confidence level for the ellipse (e.g., 0.95 for 95%)
     
-    % Extract position data and remove buffer data
-    x = time_series(:,2); % horizontal gaze positions
-    y = time_series(:,3); % vertical gaze positions
-    t = time_series(:,1); % time points
+    if nargin < 2
+        confidence = 0.95; % Default to 95% confidence
+    end
 
-    % Figure setup
-    figure("Name", "Gaze Ellipse - " + eye + " Eye")
-    title({eye + " Eye", "BCEA: " + BCEA + " (deg²)"});
+    % Extract x and y positions from the data
+    x = data(:, 2);
+    y = data(:, 3);
 
+    % Calculate the mean and covariance matrix
+    mu = [mean(x), mean(y)];
+    cov_matrix = cov(x, y);
+
+    % Eigen decomposition to get the axes of the ellipse
+    [eigvec, eigval] = eig(cov_matrix);
     
-    % Plot the gaze points
-    scatter(x, y, 10, t, 'filled'); % Scatter plot of gaze points colored by time
-    hold on;
-
-    % Calculate the mean gaze point (for center of the ellipse)
-    mean_x = mean(x); 
-    mean_y = mean(y);
-
-    % Compute standard deviations and correlation
-    std_x = std(x);
-    std_y = std(y);
-    r = corrcoef(x, y);
-    r = r(1, 2);
-
-    % Compute radii from BCEA formula
-    radii_factor = sqrt(BCEA / (2 * pi * k_value));
-    BCEA_radius_x = radii_factor * std_x * sqrt(1 - r^2);
-    BCEA_radius_y = radii_factor * std_y * sqrt(1 - r^2);
+    % Calculate the lengths of the ellipse's axes (major and minor)
+    major_axis = sqrt(max(diag(eigval)));
+    minor_axis = sqrt(min(diag(eigval)));
     
-    % Generate the angles for plotting the ellipse
-    theta = 0 : 0.01 : 2 * pi;
-    x_ellipse = BCEA_radius_x * cos(theta);
-    y_ellipse = BCEA_radius_y * sin(theta);
+    % Calculate the chi-square value for the desired confidence level
+    chi_square_val = chi2inv(confidence, 2); % 2 degrees of freedom
+    scale_factor = sqrt(chi_square_val);  % Scale the axes by this factor
     
-    % Rotate the ellipse based on the correlation coefficient
-    angle = 0.5 * atan2(2 * r * std_x * std_y, std_x^2 - std_y^2);
+    % Scale the axes of the ellipse
+    major_axis = scale_factor * major_axis;
+    minor_axis = scale_factor * minor_axis;
+    
+    % Angle of rotation of the ellipse (from the eigenvectors)
+    angle = atan2(eigvec(2, 1), eigvec(1, 1));
+
+    % Generate the points of the ellipse
+    theta = linspace(0, 2*pi, 100);
+    ellipse_points = [cos(theta); sin(theta)]' * diag([major_axis, minor_axis]);
+    
+    % Rotate the ellipse points using the eigenvector direction
     rotation_matrix = [cos(angle), -sin(angle); sin(angle), cos(angle)];
-    rotated_ellipse = rotation_matrix * [x_ellipse; y_ellipse];
+    ellipse_rot = ellipse_points * rotation_matrix';
     
-    % Plot the BCEA ellipse centered at the mean gaze position
-    plot(rotated_ellipse(1, :) + mean_x, rotated_ellipse(2, :) + mean_y, 'LineWidth', 1);
+    % Translate the ellipse points to the mean position
+    ellipse_rot = bsxfun(@plus, ellipse_rot, mu); 
+
+    % Create a figure for the plot
+    figure;
     
-    % Plotting the mean gaze point (center of the BCEA ellipse)
-    scatter(mean_x, mean_y, 'red', 's', 'filled'); % mean gaze point as a red square
+    % Plot the eye position data
+    plot(x, y, '.', 'MarkerSize', 8); 
+    hold on;  % Keep the points visible while plotting the ellipse
+
+    % Plot the BCEA ellipse
+    plot(ellipse_rot(:, 1), ellipse_rot(:, 2), 'r-', 'LineWidth', 2);
+
+    % Plot the center of the ellipse (mean of x and y)
+    plot(mu(1), mu(2), 'ko', 'MarkerFaceColor', 'k'); 
+
+    % Set axis properties
+    axis equal;
+    xlabel('X Position');
+    ylabel('Y Position');
+    title(['BCEA Ellipse (Confidence: ' num2str(confidence * 100) '%)']);
+    grid on;
     
-    % Plot the pointer indicating the screen position
-    scatter(posdegshorz(pos), posdegsvert(pos), 'magenta', 'v', 'filled');
-    
-    % Make the axes consistent
-    axis equal; % Ensure that both axes have the same scaling
-    xlim([min(x)-5, max(x)+5]); % Set x-axis limits based on data range
-    ylim([min(y)-5, max(y)+5]); % Set y-axis limits based on data range
-    
-    % Add color bar
-    cbar = colorbar;
-    colormap winter
-    ylabel(cbar, "Time (seconds)");
-    
-    % Formatting and labels
-    xlabel('Horizontal position (degrees)');
-    ylabel('Vertical position (degrees)');
-    
-    % Correct legend
-    legend("Gaze Points", "BCEA Ellipse", "Mean Gaze Point", "Screen Pointer");
+    % Optionally, set axis limits for better visualization
+    % xlim([min(x)-1, max(x)+1]);
+    % ylim([min(y)-1, max(y)+1]);
+
+    % Show the plot
     hold off;
 end

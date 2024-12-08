@@ -13,20 +13,22 @@ while true
         [~, folderName] = fileparts(path);  % This extracts the last folder or filename
         folderName = string(folderName);
         for i = 1:length(positions)
-            if contains(folderName,positions(i))
-                pos = i;\
-        pos = find(contains(folderName, positions));
+            if contains(folderName,positions(i),'IgnoreCase', true)
+                pos = i;
+            end
+        end
+       
         disp(pos)
         disp(positions(pos))
-       %[leftsacc, rightsacc, left, right, samples, samplerate] = get_saccade_data(left,right,samplerate);
+       [leftsacc, rightsacc, left, right, samples, samplerate] = get_saccade_data(left,right,samplerate);
        
        
         
-       %[swj_onset_left,swj_finish_left,swjdata_left] = swj(leftsacc,left);
-       %[swj_onset_right,swj_finish_right,swjdata_right] = swj(rightsacc,right);
+       [swj_onset_left,swj_finish_left,swjdata_left] = swj(leftsacc,left);
+       [swj_onset_right,swj_finish_right,swjdata_right] = swj(rightsacc,right);
        
-       %plotswj(left,swj_onset_left,swj_finish_left)
-       %plotswj(right,swj_onset_right,swj_finish_right)
+       plotswj(left,swj_onset_left,swj_finish_left,"left")
+       plotswj(right,swj_onset_right,swj_finish_right,"right")
        
     
     % Compute BCEA for left and right eyes
@@ -40,6 +42,9 @@ while true
     
     
     gaze_ellipse(right, BCEA_right, "right", pos, k_value); % Right eye
+
+    [ampl_L,vpeak_L,duration_L] = main_sequence(time_series,sac,eye)
+    [ampl,vpeak,duration] = main_sequence(time_series,sac,eye)
     clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
        
        
