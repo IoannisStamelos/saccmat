@@ -54,8 +54,8 @@ while true
 
     %clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
   
-    tab = table(string(path), length(leftsacc),positions(pos), length(rightsacc),length(swj_onset_left), length(swj_onset_right),... 
-    samplerate, BCEA_left, BCEA_right);
+    tab = table(string(path),positions(pos), length(leftsacc), length(rightsacc),length(swj_onset_left), length(swj_onset_right),... 
+    BCEA_left, BCEA_right, 'VariableNames',["Name", "Position","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"]);
     
     clear i interval_right interval_left folderName samples k_value 
       break      

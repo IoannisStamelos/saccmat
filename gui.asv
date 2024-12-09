@@ -53,9 +53,11 @@ while true
     [ampl_R,vpeak_R,duration_R] = main_sequence(right,rightsacc,"right");
 
     %clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
-    clear i interval_right interval_left pos folderName samples k_value 
-    table(path, numel(leftsacc), numel(rightsacc),length(swj_onset_left), length(swj_onset_right),... 
-     ... 
+  
+    tab = table(string(path),positions(pos), length(leftsacc), length(rightsacc),length(swj_onset_left), length(swj_onset_right),... 
+    BCEA_left, BCEA_right, 'VariableNames',["Name", "Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"]);
+    
+    clear i interval_right interval_left folderName samples k_value 
       break      
 
 

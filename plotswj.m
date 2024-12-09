@@ -21,5 +21,6 @@ function plotswj(time_series,swjons,swjfin,eye)
         yline(mode(time_series(:,2)),'-')
         disp("Number of Square Wave Jerks:")
         disp(numel(swjons))
+        hold off
     end
 end
