@@ -1,5 +1,8 @@
-function ellipse3(time_series, BCEA)
+function ellipse3(time_series, BCEA, eye, pos)
 % Step 1: Compute the mean and covariance matrix
+    posdegshorz = [0,-23,23,0,0];
+    posdegsvert = [0,0,0,13,-13];
+    
 buffer = 200;
 t = time_series(:,1);
 x = time_series(:,2);
@@ -9,6 +12,7 @@ x = x(buffer:end);
 y = y(buffer:end);
 
 mu = mean([x, y]);  % Mean of the x and y data
+
 covMatrix = cov(x, y);  % Covariance matrix of the x and y data
 
 % Step 2: Eigenvalue decomposition
@@ -33,11 +37,13 @@ rotatedEllipseX = cos(angle) * ellipseX - sin(angle) * ellipseY;
 rotatedEllipseY = sin(angle) * ellipseX + cos(angle) * ellipseY;
 
 % Plot the points and the ellipse
-figure;
+figure('Name',"Gaze Ellipse " + eye)
 hold on;
-scatter(x, y, 10, t, 'filled');  % Scatter plot of the points
+scatter(posdegshorz(pos),posdegsvert(pos),'magenta','v','filled');
+scatter(mean(x), mean(y), 'r','s','filled')
+scatter(x, y, 10, t);  % Scatter plot of the points
 plot(mu(1) + rotatedEllipseX, mu(2) + rotatedEllipseY, 'r', 'LineWidth', 2);  % Ellipse plot
-axis equal;
+%axis equal;
 xlabel('Horizontal');
 ylabel('Vertical');
 title(['Gaze Ellipse - Area: ' num2str(ellipse_area, '%.2f') ' (deg²)'], "BCEA: " + BCEA );  % Add area to title
