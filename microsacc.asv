@@ -109,10 +109,6 @@ for s=1:nsac
     sac(s,6:7) = [dX dY];
 	
 	sac(s, 8)= mean( sqrt( vel(a:b,1).^2 + vel(a:b,2).^2 ) );
-    sac(s,9) = x(a,1);
-    sac(s,10) = x(b,1);
-    sac(s,11) = x(a,2);
-    sac(s,12) = x(b,2);
-
+    sac(s,9) = 
 end
 end

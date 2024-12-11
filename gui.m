@@ -26,9 +26,9 @@ while true
        
        
         
-    [swj_onset_left,swj_finish_left,swjdata_left] = swj(leftsacc,left);
-    [swj_onset_right,swj_finish_right,swjdata_right] = swj(rightsacc,right);
-       
+    [swj_onset_left,swj_finish_left,swjdata_left,leftsacc,dotsl,dotswjl,swj_onsetonsetl] = swj(leftsacc,left);
+    [swj_onset_right,swj_finish_right,swjdata_right,rightsacc,dotsr,dotswjr,swj_onsetonsetr] = swj(rightsacc,right);
+    [valid_pairsl, ~] = classify_swj(leftsacc, left);   
     plotswj(left,swj_onset_left,swj_finish_left,"left")
     plotswj(right,swj_onset_right,swj_finish_right,"right")
        

@@ -1,48 +1,62 @@
-function [swj_onset,swj_finish,swj_data] = swj(sac,time_series)
+function [swj_onset, swj_finish, swj_data, sac, dot_products, swj_dots, swj_onset_intervals] = swj(sac, time_series)
 
+    % Parameters
     min_ampl = 0.3;
     sacc_similarity = 0.3;
     max_duration = 0.4;
     min_duration = 0.1;
-    %displacement_ratio = 0.3;
+
+    % Extract time column and compute amplitude
     t = time_series(:,1);
-    %x = time_series(:,2);
+    ampl = sqrt(sac(:,6).^2 + sac(:,7).^2);
     
-   
-    ampl = sqrt((sac(:,6).^2)+(sac(:,7).^2));
-    bigampl = ampl(ampl>min_ampl);
-    [~,indx] = intersect(ampl,bigampl);
-    sac = horzcat(sac,ampl);
-    sac = sac(indx,:);
-    sac = sortrows(sac,1);
+    % Filter saccades by amplitude
+    valid_idx = ampl > min_ampl;
+    sac = [sac(valid_idx,:), ampl(valid_idx)];
+    sac = sortrows(sac, 1); % Sort by timestamp
     tsac = t(sac(:,1));
-    %xsac = x(sac(:,1));
-    %disp(xsac)
-    swj_onset= zeros(1,length(sac));
-    swj_finish = swj_onset;
-    swj_data = zeros(size(sac));
+
+    % Initialize outputs
+    num_saccades = size(sac, 1);
+    swj_onset = [];
+    swj_finish = [];
+    swj_data = [];
+    dot_products = zeros(num_saccades - 1, 1);
+    swj_dots = [];
+    swj_onset_intervals = zeros(num_saccades - 1, 1);
     
-    for i = 1:height(sac)-1
+
+    % Iterate through saccades to detect SWJs
+    for i = 1:num_saccades - 1
+        % Define successive saccades
+        sacc1 = [sac(i,4), sac(i,5)];
+        sacc2 = [sac(i+1,4), sac(i+1,5)];
         
-        if tsac(i+1,1)-tsac(i,1)<= max_duration && tsac(i+1,1)-tsac(i,1)>= min_duration
-            disp(tsac(i+1,1)-tsac(i,1))
-           %if abs(sac(i,1)/sac(i+1,2)) <= displacement_ratio
-             if sac(i,4)*sac(i+1,4)<0
-               if (abs(sac(i,9)-sac(i+1,9))/(sac(i,9)+sac(i+1,9)))<=sacc_similarity 
-                       swj_onset(i) = sac(i,2);
-                       swj_finish(i) = sac(i+1,1);
-                       swj_data(i,:) = sac(i,:);
-                       swj_data(i+1,:)= sac(i+1,:);
-               end
-             end  
-           %end
+        % Compute dot product for direction check
+        dot_products(i) = dot(sacc1, sacc2);
+
+        % Temporal and spatial constraints
+        time_diff = tsac(i+1) - tsac(i);
+        amplitude_similarity = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
+
+        if min_duration <= time_diff && time_diff <= max_duration
+            if sac(i,4) * sac(i+1,4) < 0 % Opposite directions
+                if amplitude_similarity <= sacc_similarity
+                    % Mark as SWJ
+                    swj_onset = [swj_onset; sac(i,1)];
+                    swj_finish = [swj_finish; sac(i+1,1)];
+                    swj_data = [swj_data; sac(i,:); sac(i+1,:)];
+                    swj_onset_intervals(i) = time_diff;
+
+                    % Store dot product for this SWJ pair
+                    swj_dots = [swj_dots; dot_products(i)];
+                end
+            end
         end
     end
-    
-   swj_data = swj_data(~all(swj_data == 0, 2),:);
-   swj_onset = nonzeros(swj_onset);
-   swj_finish = nonzeros(swj_finish);
-   
 
+    % Finalize outputs
+    swj_onset_intervals = nonzeros(swj_onset_intervals);
+    swj_onset = nonzeros(swj_onset);
+    swj_finish = nonzeros(swj_finish);
 end
-    
