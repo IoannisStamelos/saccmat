@@ -26,9 +26,9 @@ while true
        
        
         
-    [swj_onset_left,swj_finish_left,swjdata_left,leftsacc,dotsl,dotswjl,swj_onsetonsetl] = swj(leftsacc,left);
-    [swj_onset_right,swj_finish_right,swjdata_right,rightsacc,dotsr,dotswjr,swj_onsetonsetr] = swj(rightsacc,right);
-    [valid_pairsl, ~] = classify_swj(leftsacc, left);   
+    [swj_onset_left,swj_finish_left,swjdata_left,leftsacc] = swj(leftsacc,left);
+    [swj_onset_right,swj_finish_right,swjdata_right,rightsacc] = swj(rightsacc,right);
+    %[valid_pairsl, ~] = classify_swj(leftsacc, left);   
     plotswj(left,swj_onset_left,swj_finish_left,"left")
     plotswj(right,swj_onset_right,swj_finish_right,"right")
        
@@ -57,7 +57,7 @@ while true
     tab = table(string(path),positions(pos), length(leftsacc), length(rightsacc),length(swj_onset_left), length(swj_onset_right),... 
     BCEA_left, BCEA_right, 'VariableNames',["Name", "Position","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"]);
     
-    clear i interval_right interval_left folderName samples k_value 
+    clear i interval_right interval_left folderName samples k_value pos positions 
       break      
 
 

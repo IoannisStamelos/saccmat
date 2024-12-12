@@ -1,7 +1,7 @@
 function [valid_pairs, dot_products] = classify_swj(sac, time_series)
 
     % Parameters for SWJ classification
-    min_ampl = 0.3;      % Minimum amplitude threshold
+    min_ampl = 0.5;      % Minimum amplitude threshold
     max_duration = 0.4;  % Maximum time interval between saccades (seconds)
     min_duration = 0.1;  % Minimum time interval between saccades (seconds)
     dot_threshold = -0.8; % Threshold for negative dot product
@@ -21,7 +21,7 @@ function [valid_pairs, dot_products] = classify_swj(sac, time_series)
     sac = sac(valid_indices, :); % Filter sac for consistency
     
     % Normalize the saccade vectors
-    norm_factors = sqrt(sum(saccades.^2, 2));
+    %norm_factors = sqrt(sum(saccades.^2, 2));
     saccades_normalized = saccades ./ norm_factors;
     
     % Initialize variables for pair storage
@@ -42,7 +42,10 @@ function [valid_pairs, dot_products] = classify_swj(sac, time_series)
                 
                 % Check for opposite directions and classify as SWJ
                 if dot_products(i, j) < dot_threshold
-                    valid_pairs = [valid_pairs; i, j, dot_products(i, j), times(i), times(j)];
+                        if isempty(valid_pairs) || ~any(valid_pairs(:, 1) == i) && ~any(valid_pairs(:, 2) == i) && ...
+                           ~any(valid_pairs(:, 1) == j) && ~any(valid_pairs(:, 2) == j)
+                            valid_pairs = [valid_pairs; i, j, dot_products(i, j), times(i), times(j)];
+                        end    
                 end
             end
         end

@@ -1,8 +1,8 @@
 function [swj_onset, swj_finish, swj_data, sac, dot_products, swj_dots, swj_onset_intervals] = swj(sac, time_series)
 
     % Parameters
-    min_ampl = 0.3;
-    sacc_similarity = 0.3;
+    min_ampl = 0.4;
+    sacc_similarity = 1;
     max_duration = 0.4;
     min_duration = 0.1;
 
@@ -16,13 +16,12 @@ function [swj_onset, swj_finish, swj_data, sac, dot_products, swj_dots, swj_onse
     sac = sortrows(sac, 1); % Sort by timestamp
     tsac = t(sac(:,1));
 
+
     % Initialize outputs
     num_saccades = size(sac, 1);
     swj_onset = [];
     swj_finish = [];
     swj_data = [];
-    dot_products = zeros(num_saccades - 1, 1);
-    swj_dots = [];
     swj_onset_intervals = zeros(num_saccades - 1, 1);
     
 
@@ -32,8 +31,6 @@ function [swj_onset, swj_finish, swj_data, sac, dot_products, swj_dots, swj_onse
         sacc1 = [sac(i,4), sac(i,5)];
         sacc2 = [sac(i+1,4), sac(i+1,5)];
         
-        % Compute dot product for direction check
-        dot_products(i) = dot(sacc1, sacc2);
 
         % Temporal and spatial constraints
         time_diff = tsac(i+1) - tsac(i);
@@ -42,14 +39,15 @@ function [swj_onset, swj_finish, swj_data, sac, dot_products, swj_dots, swj_onse
         if min_duration <= time_diff && time_diff <= max_duration
             if sac(i,4) * sac(i+1,4) < 0 % Opposite directions
                 if amplitude_similarity <= sacc_similarity
+                   if  isempty(swj_data) || ~any(swj_finish == sac(i,1))
                     % Mark as SWJ
                     swj_onset = [swj_onset; sac(i,1)];
                     swj_finish = [swj_finish; sac(i+1,1)];
                     swj_data = [swj_data; sac(i,:); sac(i+1,:)];
                     swj_onset_intervals(i) = time_diff;
+                   end
 
-                    % Store dot product for this SWJ pair
-                    swj_dots = [swj_dots; dot_products(i)];
+                  
                 end
             end
         end

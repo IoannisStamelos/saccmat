@@ -16,7 +16,6 @@ function [left,right,samplerate] = preprocess(path)
    y2 = right(:,3);
    % Check for duplicates in t1
    plot(t1,x1)
-   hold on 
  
 
    % Remove duplicates by keeping the first occurrence
@@ -82,9 +81,8 @@ function [left,right,samplerate] = preprocess(path)
    % ylabel('Position');
    % legend;
    % grid on;
-   plot(t_common, x1_common,'r')
-   legend("1","2")
-   hold off
+   plot(tcommon, x1_common)
+   
    left = vertcat(t_common,x1_common,y1_common)';
    right = vertcat(t_common,x2_common,y1_common)';
    samplerate = fs_common;
