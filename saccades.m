@@ -43,13 +43,13 @@ if ( ~exist('maxmag', 'var') || isempty( maxmag ) )
     maxmag = 5;
 end
 if ( ~exist('Overshoot_Time', 'var') || isempty( Overshoot_Time ) )
-    Overshoot_Time = 0.02;
+    Overshoot_Time = 20;
 end
 if ( ~exist('MINDUR', 'var') || isempty( MINDUR ) )
     MINDUR = 3;
 end
 if ( ~exist('VFAC', 'var') || isempty( VFAC ) )
-    VFAC = 6;
+    VFAC = 3;
 end
 if ( ~exist('isInTrial', 'var') || isempty( isInTrial ) )
     isInTrial = ones(size(samples(:,1)));

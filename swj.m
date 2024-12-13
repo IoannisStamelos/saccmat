@@ -1,9 +1,9 @@
-function [swj_onset, swj_finish, swj_data, sac, dot_products, swj_dots, swj_onset_intervals] = swj(sac, time_series)
+function [sacctimes, swj_data, sac] = swj(sac, time_series)
 
     % Parameters
     min_ampl = 0.4;
     sacc_similarity = 1;
-    max_duration = 0.4;
+    max_duration = 0.5;
     min_duration = 0.1;
 
     % Extract time column and compute amplitude
@@ -19,10 +19,13 @@ function [swj_onset, swj_finish, swj_data, sac, dot_products, swj_dots, swj_onse
 
     % Initialize outputs
     num_saccades = size(sac, 1);
-    swj_onset = [];
-    swj_finish = [];
+    start1 = [];
+    start2 = [];
+    end1 = [];
+    end2 = [];
+    
     swj_data = [];
-    swj_onset_intervals = zeros(num_saccades - 1, 1);
+    
     
 
     % Iterate through saccades to detect SWJs
@@ -39,12 +42,13 @@ function [swj_onset, swj_finish, swj_data, sac, dot_products, swj_dots, swj_onse
         if min_duration <= time_diff && time_diff <= max_duration
             if sac(i,4) * sac(i+1,4) < 0 % Opposite directions
                 if amplitude_similarity <= sacc_similarity
-                   if  isempty(swj_data) || ~any(swj_finish == sac(i,1))
+                   if  isempty(swj_data) || ~any(start2 == sac(i,1))
                     % Mark as SWJ
-                    swj_onset = [swj_onset; sac(i,1)];
-                    swj_finish = [swj_finish; sac(i+1,1)];
+                    start1 = [start1; sac(i,1)];
+                    end1 = [end1; sac(i,2)];
+                    start2 = [start2; sac(i+1,1)];
+                    end2 = [end2; sac(i+1,2)];
                     swj_data = [swj_data; sac(i,:); sac(i+1,:)];
-                    swj_onset_intervals(i) = time_diff;
                    end
 
                   
@@ -52,9 +56,9 @@ function [swj_onset, swj_finish, swj_data, sac, dot_products, swj_dots, swj_onse
             end
         end
     end
-
+sacctimes = {start1, end1, start2 end2};
+for i = 1:length(sacctimes)
+    sacctimes{i} = nonzeros(t(sacctimes{i}));
     % Finalize outputs
-    swj_onset_intervals = nonzeros(swj_onset_intervals);
-    swj_onset = nonzeros(swj_onset);
-    swj_finish = nonzeros(swj_finish);
+
 end

@@ -26,11 +26,11 @@ while true
        
        
         
-    [swj_onset_left,swj_finish_left,swjdata_left,leftsacc] = swj(leftsacc,left);
-    [swj_onset_right,swj_finish_right,swjdata_right,rightsacc] = swj(rightsacc,right);
+    [sacctimes_left,swjdata_left,leftsacc] = swj(leftsacc,left);
+    [sacctimes_right,swjdata_right,rightsacc] = swj(rightsacc,right);
     %[valid_pairsl, ~] = classify_swj(leftsacc, left);   
-    plotswj(left,swj_onset_left,swj_finish_left,"left")
-    plotswj(right,swj_onset_right,swj_finish_right,"right")
+    plotswj(left,sacctimes_left,"left")
+    plotswj(right,sacctimes_right,"right")
        
     
     % Compute BCEA for left and right eyes

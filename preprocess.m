@@ -55,8 +55,8 @@ function [left,right,samplerate] = preprocess(path)
    y1_common = pchip(t1, y1, t_common);
 
    % Interpolate positions for the second eye
-   x2_common = pchip(t2, x2, t_common);
-   y2_common = pchip(t2, y2, t_common);
+   x2_common = interp1(t2, x2, t_common,"makima");
+   y2_common = interp1(t2, y2, t_common, "makima");
    
    % figure;
    % subplot(2, 1, 1);
@@ -86,7 +86,7 @@ function [left,right,samplerate] = preprocess(path)
    legend("1","2")
    hold off
    left = vertcat(t_common,x1_common,y1_common)';
-   right = vertcat(t_common,x2_common,y1_common)';
+   right = vertcat(t_common,x2_common,y2_common)';
    samplerate = fs_common;
    
 
