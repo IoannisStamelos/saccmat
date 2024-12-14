@@ -20,22 +20,21 @@ while true
             end
         end
        
-  
+        disp(pos)
+        disp(positions(pos))
        [leftsacc, rightsacc, left, right, samples, samplerate] = get_saccade_data(left,right,samplerate);
        
-      
+       
+        
     [sacctimes_left,swjdata_left,leftsacc] = swj(leftsacc,left);
     [sacctimes_right,swjdata_right,rightsacc] = swj(rightsacc,right);
-    
     %[valid_pairsl, ~] = classify_swj(leftsacc, left);   
-    figure  
-    tiledlayout(2,1)
     plotswj(left,sacctimes_left,"left")
     plotswj(right,sacctimes_right,"right")
        
     
     % Compute BCEA for left and right eyes
-    k_value = 2.99573; % Default for 95% confidence interval
+    k_value = 1.96; % Default for 95% confidence interval
     [BCEA_left, interval_left] = compute_BCEA(left, 2, k_value);
     [BCEA_right, interval_right] = compute_BCEA(right, 2, k_value);
     
@@ -47,12 +46,11 @@ while true
     %gaze_ellipse(right,0.95); % Right eye
     %gaze_density_ellipse(left, "left")
     %gaze_density_ellipse(right, "right")
-    figure
+    
     tiledlayout(1,2)
     ellipse3(left, BCEA_left, "left", pos)
     ellipse3(right, BCEA_right, "right", pos)
     
-    figure
     tiledlayout(2,2)
     
     [ampl_L,vpeak_L,duration_L] = main_sequence(left,leftsacc,"left");

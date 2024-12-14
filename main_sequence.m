@@ -4,7 +4,7 @@ function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye)
     t = time_series(:,1);
     duration = t(sac(:,2))-t(sac(:,1));
 
-    figure("Name","Ampl-Dt, " + eye + " eye")
+    nexttile
     
     scatter(ampl,duration)
     xlabel("Amplitude (deg)")
@@ -19,8 +19,8 @@ function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye)
   
     title(eye + " eye")
     
-       
-    figure("Name","Ampl-Vpeak, " + eye + " eye")
+    nexttile   
+    
     scatter(ampl,vpeak)
     xlabel("Amplitude (deg)")
     ylabel("Peak velocity (deg/s)")

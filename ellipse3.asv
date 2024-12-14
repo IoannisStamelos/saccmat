@@ -46,7 +46,7 @@ plot(mu(1) + rotatedEllipseX, mu(2) + rotatedEllipseY, 'r', 'LineWidth', 2);  % 
 %axis equal;
 xlabel('Horizontal');
 ylabel('Vertical');
-title(['Gaze Ellipse - Area: ' num2str(ellipse_area, '%.2f') ' (deg²)'], "BCEA: " + BCEA + ''+ eye);  % Add area to title
+title(['Gaze Ellipse - Area: ' num2str(ellipse_area, '%.2f') ' (deg²)'], "BCEA: " + BCEA , eye' );  % Add area to title
 cbar = colorbar;
 colormap winter
 ylabel(cbar, "Time (seconds)");

@@ -55,8 +55,8 @@ function [left,right,samplerate] = preprocess(path)
    y1_common = pchip(t1, y1, t_common);
 
    % Interpolate positions for the second eye
-   x2_common = interp1(t2, x2, t_common,"makima");
-   y2_common = interp1(t2, y2, t_common, "makima");
+   x2_common = interp1(t2, x2, t_common,"pchip");
+   y2_common = interp1(t2, y2, t_common, "pchip");
    
    % figure;
    % subplot(2, 1, 1);

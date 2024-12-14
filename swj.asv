@@ -1,4 +1,4 @@
-function [sacctimes, swj_data, sac] = swj(sac, time_series)
+function [sacctime, swj_data, sac] = swj(sac, time_series)
 
     % Parameters
     min_ampl = 0.4;
@@ -57,14 +57,12 @@ function [sacctimes, swj_data, sac] = swj(sac, time_series)
         end
     end
 sacctime = {start1, end1, start2 end2};
-sacctimes = [];
+sacctimes = []
 for i = 1:length(sacctime)
     sacctime{i} = nonzeros(t(sacctime{i}));
     % Finalize outputs
-    sacctimes = horzcat(sacctimes,sacctime{i});
-    
+    sacctimes = [sacctimes; sacctime{i}];
 
 end
-
 
 end
