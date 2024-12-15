@@ -8,8 +8,8 @@ function [left,right,samplerate] = preprocess(path)
    left(:,1) = left(:,1) - left(1,1);
    right(:,1) = right(:,1) - right(1,1);
    % Define overlapping time range
-   t1 = left(:,1)/1000;
-   t2 = right(:,1)/1000;
+   t1 = left(:,1);
+   t2 = right(:,1);
    x1 = left(:,2);
    x2 = right(:,2);
    y1 = left(:,3);
@@ -55,8 +55,8 @@ function [left,right,samplerate] = preprocess(path)
    y1_common = pchip(t1, y1, t_common);
 
    % Interpolate positions for the second eye
-   x2_common = interp1(t2, x2, t_common,"pchip");
-   y2_common = interp1(t2, y2, t_common, "pchip");
+   x2_common = interp1(t2, x2, t_common,"nearest");
+   y2_common = interp1(t2, y2, t_common, "nearest");
    
    % figure;
    % subplot(2, 1, 1);

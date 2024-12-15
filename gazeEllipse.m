@@ -1,4 +1,4 @@
-function ellipse3(time_series, BCEA, eye, pos)
+function gazeEllipse(time_series, BCEA, eye, pos)
 % Step 1: Compute the mean and covariance matrix
     posdegshorz = [0,-23,23,0,0];
     posdegsvert = [0,0,0,13,-13];
@@ -40,16 +40,20 @@ rotatedEllipseY = sin(angle) * ellipseX + cos(angle) * ellipseY;
 nexttile
 hold on;
 scatter(posdegshorz(pos),posdegsvert(pos),'magenta','v','filled');
-scatter(mean(x), mean(y), 'r','s','filled')
+meanpoint = scatter(mean(x), mean(y), 50,'r','s','filled');
+
 scatter(x, y, 10, t);  % Scatter plot of the points
 plot(mu(1) + rotatedEllipseX, mu(2) + rotatedEllipseY, 'r', 'LineWidth', 2);  % Ellipse plot
+uistack(meanpoint,'top')
+
 %axis equal;
 xlabel('Horizontal');
 ylabel('Vertical');
-title(['Gaze Ellipse - Area: ' num2str(ellipse_area, '%.2f') ' (deg²)'], "BCEA: " + BCEA + ''+ eye);  % Add area to title
+title(['Gaze Ellipse - Area: ' num2str(ellipse_area, '%.2f') ' (deg²)'], "BCEA: " + BCEA + ', '+ eye +" eye");  % Add area to title
 cbar = colorbar;
 colormap winter
 ylabel(cbar, "Time (seconds)");
+legend("Screen Pointer","Mean Gaze Point","Eye position","Density Ellipse")
 
 hold off;
 end

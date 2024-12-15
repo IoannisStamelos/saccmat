@@ -1,4 +1,4 @@
-function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye,tsac)
+function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye)
     ampl = sqrt(sac(:,6).^2+sac(:,7).^2);
     vpeak = sac(:,3);
     t = time_series(:,1);
@@ -6,12 +6,8 @@ function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye,tsac)
 
     nexttile
     
-    scatter(ampl,duration,15,tsac,'filled')
-    set(gca,'Color','k')
-    cbar = colorbar;
-    colormap spring
-    ylabel(cbar, "Time (seconds)");
-
+    scatter(ampl,duration,10,sac(:,1))
+    colormap("hot")
     xlabel("Amplitude (deg)")
     ylabel("Duration (ms)")
     p = polyfit(ampl,duration,2);
@@ -20,17 +16,13 @@ function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye,tsac)
     xest = linspace(min(ampl), max(ampl), 75);
     yest = polyval(p, xest);
     hold on
-    plot(xest, yest, '-w');
+    plot(xest, yest, '-b');
   
     title(eye + " eye")
     
     nexttile   
     
-    scatter(ampl,vpeak,15,tsac,'filled')
-    set(gca,'Color','k')
-    colormap spring
-    ylabel(cbar, "Time (seconds)");
-
+    scatter(ampl,vpeak,10,sac(:,1))
     xlabel("Amplitude (deg)")
     ylabel("Peak velocity (deg/s)")
     p2 = polyfit(ampl,vpeak,2);
@@ -39,7 +31,7 @@ function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye,tsac)
     xest2 = linspace(min(ampl), max(ampl), 75);
     yest2 = polyval(p2, xest2);
     hold on
-    plot(xest2, yest2, '-w');
+    plot(xest2, yest2, '-b');
   
     title(eye + " eye")
 end

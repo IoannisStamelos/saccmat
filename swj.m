@@ -1,10 +1,10 @@
-function [sacctimes, swj_data, sac] = swj(sac, time_series)
+function [sacctimes, swj_data, sac,tsac] = swj(sac, time_series)
 
     % Parameters
     min_ampl = 0.4;
     sacc_similarity = 1;
-    max_duration = 0.5;
-    min_duration = 0.1;
+    max_duration = 500;
+    min_duration = 100;
 
     % Extract time column and compute amplitude
     t = time_series(:,1);

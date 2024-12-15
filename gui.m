@@ -7,11 +7,12 @@ while true
         end
            disp(['File folder: ', path]);
            
-            
+    % 1.Preprocess    
         [left,right,samplerate] = preprocess(path);
         positions =  [" Center", " Left", " Right", " Up", " Down"];
         [~, folderName] = fileparts(path);  % This extracts the last folder or filename
         folderName = string(folderName);
+
         for i = 1:length(positions)
             if contains(folderName,positions(i),'IgnoreCase', true)
                 pos = i;
@@ -20,48 +21,41 @@ while true
             end
         end
        
-  
-       [leftsacc, rightsacc, left, right, samples, samplerate] = get_saccade_data(left,right,samplerate);
+    % 2.Saccades
+    [leftsacc, rightsacc, left, right, ~, samplerate] = get_saccade_data(left,right,samplerate);
        
-      
-    [sacctimes_left,swjdata_left,leftsacc] = swj(leftsacc,left);
-    [sacctimes_right,swjdata_right,rightsacc] = swj(rightsacc,right);
-    
-    %[valid_pairsl, ~] = classify_swj(leftsacc, left);   
-    figure  
+    % 3.Square Wave Jerks  
+    [sacctimes_left,swjdata_left,leftsacc,tsacleft] = swj(leftsacc,left);
+    [sacctimes_right,swjdata_right,rightsacc,tsacright] = swj(rightsacc,right);
+    figure(1);  % Create or select figure 1
+    set(gcf, 'Name', "Square Wave Jerks");  % Set the name and remove the default number) 
     tiledlayout(2,1)
     plotswj(left,sacctimes_left,"left")
     plotswj(right,sacctimes_right,"right")
        
     
-    % Compute BCEA for left and right eyes
+    % 4.BCEA
     k_value = 2.99573; % Default for 95% confidence interval
-    [BCEA_left, interval_left] = compute_BCEA(left, 2, k_value);
-    [BCEA_right, interval_right] = compute_BCEA(right, 2, k_value);
+    [BCEA_left, ~] = compute_BCEA(left, 2, k_value);
+    [BCEA_right, ~] = compute_BCEA(right, 2, k_value);
     
-    % Plot gaze ellipses and compare areas
-    
-    %gaze_ellipse(left,0.95); % Left eye
-    
-    
-    %gaze_ellipse(right,0.95); % Right eye
-    %gaze_density_ellipse(left, "left")
-    %gaze_density_ellipse(right, "right")
-    figure
+    % 5.Density Ellipses
+    figure('Name',"Fixation Ellipse")
     tiledlayout(1,2)
-    ellipse3(left, BCEA_left, "left", pos)
-    ellipse3(right, BCEA_right, "right", pos)
+    gazeEllipse(left, BCEA_left, "left", pos)
+    gazeEllipse(right, BCEA_right, "right", pos)
     
-    figure
+    figure('Name',"Main Sequence")
     tiledlayout(2,2)
     
-    [ampl_L,vpeak_L,duration_L] = main_sequence(left,leftsacc,"left");
-    [ampl_R,vpeak_R,duration_R] = main_sequence(right,rightsacc,"right");
+    %6.Main Sequence
+    [ampl_L,vpeak_L,duration_L] = main_sequence(left,leftsacc,"left",tsacleft);
+    [ampl_R,vpeak_R,duration_R] = main_sequence(right,rightsacc,"right",tsacright);
 
     %clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
-  
+    
     tab = table(string(path),positions(pos), length(leftsacc), length(rightsacc),length(sacctimes_left), length(sacctimes_right),... 
-    BCEA_left, BCEA_right, 'VariableNames',["Name", "Position","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"]);
+    BCEA_left, BCEA_right, 'VariableNames',["Name", "Position","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"])
     
     clear i interval_right interval_left folderName samples k_value pos positions 
       break      
