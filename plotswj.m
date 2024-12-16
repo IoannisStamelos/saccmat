@@ -22,10 +22,10 @@ function plotswj(time_series, sacctimes, eye)
         [~, idx_end_2] = arrayfun(@(x) min(abs(t - x)), sacctimes(:,4));
         
         % Plot all starts and ends of saccades in valid pairs
-        plot(t(idx_start_1), time_series(idx_start_1, 2), 'bo', 'MarkerSize', 5, 'LineWidth', 1.5); % Starts of saccade 1
-        plot(t(idx_end_1), time_series(idx_end_1, 2), 'b*', 'MarkerSize', 5, 'LineWidth', 1.5);   % Ends of saccade 1
-        plot(t(idx_start_2), time_series(idx_start_2, 2), 'ro', 'MarkerSize', 5, 'LineWidth', 1.5); % Starts of saccade 2
-        plot(t(idx_end_2), time_series(idx_end_2, 2), 'r*', 'MarkerSize', 5, 'LineWidth', 1.5);   % Ends of saccade 2
+        plot(t(idx_start_1), time_series(idx_start_1, 2), 'b*', 'MarkerSize', 5, 'LineWidth', 1); % Starts of saccade 1
+        plot(t(idx_end_1), time_series(idx_end_1, 2), 'b>', 'MarkerSize', 5, 'LineWidth', 1);   % Ends of saccade 1
+        plot(t(idx_start_2), time_series(idx_start_2, 2), 'r*', 'MarkerSize', 5, 'LineWidth', 1); % Starts of saccade 2
+        plot(t(idx_end_2), time_series(idx_end_2, 2), 'r>', 'MarkerSize', 5, 'LineWidth', 1);   % Ends of saccade 2
 
         % Add counting labels for the starts of saccades
         % Labels for saccade 1 starts
@@ -38,8 +38,8 @@ function plotswj(time_series, sacctimes, eye)
         
         % Add a legend to clarify the visualization
         legend({'Horizontal Position', ...
-                'Saccade 1 Start (o)', 'Saccade 1 End (*)', ...
-                'Saccade 2 Start (o)', 'Saccade 2 End (*)'}, ...
+                'Saccade 1 Start (*)', 'Saccade 1 End (>)', ...
+                'Saccade 2 Start (*)', 'Saccade 2 End (>)'}, ...
                 'Location', 'best');
         hold off
     end
