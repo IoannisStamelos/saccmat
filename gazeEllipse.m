@@ -40,10 +40,11 @@ rotatedEllipseY = sin(angle) * ellipseX + cos(angle) * ellipseY;
 nexttile
 hold on;
 scatter(posdegshorz(pos),posdegsvert(pos),'magenta','v','filled');
-meanpoint = scatter(mean(x), mean(y), 50,'r','s','filled');
+
 
 scatter(x, y, 10, t);  % Scatter plot of the points
-plot(mu(1) + rotatedEllipseX, mu(2) + rotatedEllipseY, 'r', 'LineWidth', 2);  % Ellipse plot
+plot(mu(1) + rotatedEllipseX, mu(2) + rotatedEllipseY, '-k', 'LineWidth', 1);  % Ellipse plot
+meanpoint = scatter(mean(x), mean(y), 50,'r','s','filled');
 uistack(meanpoint,'top')
 
 %axis equal;
@@ -53,7 +54,7 @@ title(['Gaze Ellipse - Area: ' num2str(ellipse_area, '%.2f') ' (deg²)'], "BCEA:
 cbar = colorbar;
 colormap winter
 ylabel(cbar, "Time (seconds)");
-legend("Screen Pointer","Mean Gaze Point","Eye position","Density Ellipse")
+legend("Screen Pointer","Eye position","Density Ellipse","Mean Gaze Point")
 
 hold off;
 end

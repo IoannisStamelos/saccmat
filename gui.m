@@ -27,7 +27,8 @@ while true
     % 3.Square Wave Jerks  
     [sacctimes_left,swjdata_left,leftsacc,tsacleft] = swj(leftsacc,left);
     [sacctimes_right,swjdata_right,rightsacc,tsacright] = swj(rightsacc,right);
-    figure(1);  % Create or select figure 1
+    close all
+    figure(1); 
     set(gcf, 'Name', "Square Wave Jerks");  % Set the name and remove the default number) 
     tiledlayout(2,1)
     plotswj(left,sacctimes_left,"left")
@@ -49,8 +50,8 @@ while true
     tiledlayout(2,2)
     
     %6.Main Sequence
-    [ampl_L,vpeak_L,duration_L] = main_sequence(left,leftsacc,"left",tsacleft);
-    [ampl_R,vpeak_R,duration_R] = main_sequence(right,rightsacc,"right",tsacright);
+    [ampl_L,vpeak_L,duration_L] = main_sequence(left,leftsacc,"left",tsacleft,samplerate);
+    [ampl_R,vpeak_R,duration_R] = main_sequence(right,rightsacc,"right",tsacright,samplerate);
 
     %clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
     
