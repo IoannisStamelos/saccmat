@@ -1,118 +1,103 @@
-function [sac, radius] = microsacc(x,vel,VFAC,MINDUR, blink)
+function [sac, radius] = microsacc(x, vel, VFAC, MINDUR, blink, ANGTHRESH)
 %-------------------------------------------------------------------
+% FUNCTION microsacc.m (with direction-based saccade splitting)
 %
-%  FUNCTION microsacc.m
+% INPUT:
+% x(:,1:2)         position vector
+% vel(:,1:2)       velocity vector
+% VFAC             relative velocity threshold
+% MINDUR           minimal saccade duration
+% blink            blink vector (logical)
+% ANGTHRESH        direction change threshold (in radians)
 %
-%  (Version 1.0, 22 FEB 01)
-%  (Version 2.0, 18 JUL 05)
-%  (Version 2.1, 03 OCT 05)
-%
+% OUTPUT:
+% sac(1:num,:)     saccade data matrix
+% radius           velocity thresholds [radiusx, radiusy]
 %-------------------------------------------------------------------
-%
-%  INPUT:
-%
-%  x(:,1:2)         position vector
-%  vel(:,1:2)       velocity vector
-%  VFAC             relative velocity threshold
-%  MINDUR           minimal saccade duration
-%
-%  OUTPUT:
-%
-%  sac(1:num,1)   onset of saccade
-%  sac(1:num,2)   end of saccade
-%  sac(1:num,3)   peak velocity of saccade (vpeak)
-%  sac(1:num,4)   horizontal component     (dx)
-%  sac(1:num,5)   vertical component       (dy)
-%  sac(1:num,6)   horizontal amplitude     (dX)
-%  sac(1:num,7)   vertical amplitude       (dY)
-%  ADDED BY JORGE OTERO-MILLAN 
-%  sac(1:num,8)   mean velocity of the saccade
-%
-%---------------------------------------------------------------------
 
+% Compute velocity thresholds (ignoring blinks)
+vel2 = vel(~blink, :);
+msdx = sqrt(median(vel2(:,1).^2) - (median(vel2(:,1)))^2);
+msdy = sqrt(median(vel2(:,2).^2) - (median(vel2(:,2)))^2);
+radiusx = VFAC * msdx;
+radiusy = VFAC * msdy;
+radius = [radiusx, radiusy];
 
-% compute threshold (modified by Jorge Otero-Millan to ignore blinks)
-vel2 = vel(~blink,:);warning off MATLAB:divideByZero
-msdx = sqrt( median(vel2(:,1).^2) - (median(vel2(:,1)))^2 );
-msdy = sqrt( median(vel2(:,2).^2) - (median(vel2(:,2)))^2 );
-if msdx<realmin
-    msdx = sqrt( mean(vel2(:,1).^2) - (mean(vel2(:,1)))^2 );
-end
-if msdy<realmin
-    msdy = sqrt( mean(vel2(:,2).^2) - (mean(vel2(:,2)))^2 );
-end
-radiusx = VFAC*msdx;
-radiusy = VFAC*msdy;
-radius	= [radiusx radiusy];
-
-% compute test criterion: ellipse equation
-if ( radiusy == 0 )
-	test = (vel(:,1)/radiusx).^2 ;
-elseif ( radiusx == 0 )
-	test =  (vel(:,2)/radiusy).^2;
+% Test criterion: ellipse equation
+if radiusy == 0
+    test = (vel(:,1) / radiusx).^2;
+elseif radiusx == 0
+    test = (vel(:,2) / radiusy).^2;
 else
-	test = (vel(:,1)/radiusx).^2 + (vel(:,2)/radiusy).^2;
+    test = (vel(:,1) / radiusx).^2 + (vel(:,2) / radiusy).^2;
 end
-	
-indx = find(test>1);
 
-% determine saccades
-N = length(indx); 
+indx = find(test > 1); % Points where velocity exceeds threshold
+
+% Detect saccades with direction change splitting
+N = length(indx);
 sac = [];
 nsac = 0;
 dur = 1;
 a = 1;
-k = 1;
-while k<N
-    if indx(k+1)-indx(k)==1
-        dur = dur + 1;
-    else
-        if dur>=MINDUR
+
+% Iterate through velocity threshold crossings
+for k = 2:N
+    if indx(k) - indx(k-1) > 1
+        % End of a saccade candidate
+        if dur >= MINDUR
             nsac = nsac + 1;
-            b = k;
-            sac(nsac,:) = [indx(a) indx(b)];
+            sac(nsac, :) = [indx(a), indx(k-1)];
         end
-        a = k+1;
+        a = k;
         dur = 1;
+    else
+        % Check cumulative direction change
+        v1 = x(indx(a)+1, :) - x(indx(a), :); % Start vector
+        v2 = x(indx(k)+1, :) - x(indx(k), :); % Current vector
+        
+        angle = acos(dot(v1, v2) / (norm(v1) * norm(v2) + eps));
+        if angle > ANGTHRESH
+            % Split saccade due to direction change
+            if dur >= MINDUR
+                nsac = nsac + 1;
+                sac(nsac, :) = [indx(a), indx(k-1)];
+            end
+            a = k; % Start new saccade
+            dur = 1;
+        else
+            dur = dur + 1;
+        end
     end
-    k = k + 1;
 end
 
-% check for minimum duration
-if dur>=MINDUR
+% Final check for last saccade
+if dur >= MINDUR
     nsac = nsac + 1;
-    b = k;
-    sac(nsac,:) = [indx(a) indx(b)];
+    sac(nsac, :) = [indx(a), indx(end)];
 end
 
-% compute peak velocity, horizonal and vertical components
-for s=1:nsac
-    % onset and offset
-    a = sac(s,1); 
-    b = sac(s,2); 
-    % saccade peak velocity (vpeak)
-    vpeak = max( sqrt( vel(a:b,1).^2 + vel(a:b,2).^2 ) );
-    sac(s,3) = vpeak;
-    % saccade vector (dx,dy)
-    dx = x(b,1)-x(a,1); 
-    dy = x(b,2)-x(a,2); 
-    sac(s,4) = dx;
-    sac(s,5) = dy;
-    % saccade amplitude (dX,dY)
-    i = sac(s,1):sac(s,2);
+% Ensure we have at least 7 columns in the saccade data
+for s = 1:nsac
+    a = sac(s, 1);
+    b = sac(s, 2);
+    vpeak = max(sqrt(vel(a:b,1).^2 + vel(a:b,2).^2)); % Peak velocity
+    dx = x(b,1) - x(a,1);
+    dy = x(b,2) - x(a,2);
+    sac(s, 3:5) = [vpeak, dx, dy];
+    
+    % Horizontal and vertical amplitudes
+    i = sac(s, 1):sac(s, 2);
     [minx, ix1] = min(x(i,1));
     [maxx, ix2] = max(x(i,1));
     [miny, iy1] = min(x(i,2));
     [maxy, iy2] = max(x(i,2));
     dX = sign(ix2-ix1)*(maxx-minx);
     dY = sign(iy2-iy1)*(maxy-miny);
-    sac(s,6:7) = [dX dY];
-	
-	sac(s, 8)= mean( sqrt( vel(a:b,1).^2 + vel(a:b,2).^2 ) );
-    sac(s,9) = x(a,1);
-    sac(s,10) = x(b,1);
-    sac(s,11) = x(a,2);
-    sac(s,12) = x(b,2);
-
+    sac(s, 6:7) = [dX dY];  % Ensure these values are included
+    
+    % Optionally, include more columns
+    sac(s, 8) = mean(sqrt(vel(a:b, 1).^2 + vel(a:b, 2).^2));  % Mean velocity
+    sac(s, 9:12) = [x(a, 1), x(b, 1), x(a, 2), x(b, 2)];  % Start and end positions
 end
 end

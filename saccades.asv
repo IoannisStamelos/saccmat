@@ -159,7 +159,7 @@ for iTrial = 1:length(trial_begin_idx)
     xy = eyedat(trial:trial_end,1:2);
     v = eyedat(trial:trial_end,3:4);
     
-    [sac] = microsacc(xy, v ,VFAC,MINDUR, blinks(trial:trial_end),2*pi);
+    [sac] = microsacc(xy, v ,VFAC,MINDUR, blinks(trial:trial_end),pi);
 
     if (~isempty( sac ) )
         sac(:,1:2) = sac(:,1:2) + trial-1;

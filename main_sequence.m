@@ -4,12 +4,12 @@ function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye,tsac,samplera
     t = time_series(:,1);
     duration = t(sac(:,2))-t(sac(:,1));
     duration2 = (1/samplerate)*(sac(:,2)-sac(:,1));
-    duration - duration2
+    
     
 
     nexttile
     
-    scatter(ampl,duration2,15,tsac,'filled')
+    scatter(ampl,duration,15,tsac,'filled')
     set(gca,'Color','k')
     cbar = colorbar;
     colormap spring
@@ -17,7 +17,7 @@ function [ampl,vpeak,duration] = main_sequence(time_series,sac,eye,tsac,samplera
 
     xlabel("Amplitude (deg)")
     ylabel("Duration (ms)")
-    p = polyfit(ampl,duration2,2);
+    p = polyfit(ampl,duration,2);
     eqn = poly2sym(p);
     subtitle(char(vpa(eqn,2)))
     xest = linspace(min(ampl), max(ampl), 75);
