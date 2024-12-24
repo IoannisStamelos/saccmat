@@ -3,38 +3,35 @@ function [ampl, vpeak, duration, mse_duration, mse_vpeak] = main_sequence(time_s
     ampl = sqrt(sac(:,6).^2 + sac(:,7).^2);
     vpeak = sac(:,3);
     t = time_series(:,1);
-<<<<<<< Updated upstream
+
     duration = t(sac(:,2))-t(sac(:,1));
     duration2 = (1/samplerate)*(sac(:,2)-sac(:,1));
     
-    
-=======
+
     duration = t(sac(:,2)) - t(sac(:,1));
     duration2 = (1 / samplerate) * (sac(:,2) - sac(:,1));
->>>>>>> Stashed changes
+
 
     % First subplot: Amplitude vs. Duration
     nexttile
-<<<<<<< Updated upstream
+
     
     scatter(ampl,duration,15,tsac,'filled')
     set(gca,'Color','k')
-=======
+
     scatter(ampl, duration2, 15, tsac, 'filled')
     set(gca, 'Color', 'k')
->>>>>>> Stashed changes
+
     cbar = colorbar;
     colormap spring
     ylabel(cbar, "Time (milliseconds)");
     xlabel("Amplitude (deg)")
     ylabel("Duration (ms)")
-<<<<<<< Updated upstream
+
     p = polyfit(ampl,duration,2);
-=======
 
     % Linear fit and equation display
     p = polyfit(ampl, duration2, 1);
->>>>>>> Stashed changes
     eqn = poly2sym(p);
     
 
