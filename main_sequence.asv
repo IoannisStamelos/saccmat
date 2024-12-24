@@ -3,40 +3,23 @@ function [ampl, vpeak, duration, mse_duration, mse_vpeak] = main_sequence(time_s
     ampl = sqrt(sac(:,6).^2 + sac(:,7).^2);
     vpeak = sac(:,3);
     t = time_series(:,1);
-<<<<<<< Updated upstream
-    duration = t(sac(:,2))-t(sac(:,1));
-    duration2 = (1/samplerate)*(sac(:,2)-sac(:,1));
-    
-    
-=======
     duration = t(sac(:,2)) - t(sac(:,1));
     duration2 = (1 / samplerate) * (sac(:,2) - sac(:,1));
->>>>>>> Stashed changes
 
     % First subplot: Amplitude vs. Duration
     nexttile
-<<<<<<< Updated upstream
-    
-    scatter(ampl,duration,15,tsac,'filled')
-    set(gca,'Color','k')
-=======
     scatter(ampl, duration2, 15, tsac, 'filled')
     set(gca, 'Color', 'k')
->>>>>>> Stashed changes
     cbar = colorbar;
     colormap spring
-    ylabel(cbar, "Time (milliseconds)");
+    ylabel(cbar, "Time (seconds)");
     xlabel("Amplitude (deg)")
     ylabel("Duration (ms)")
-<<<<<<< Updated upstream
-    p = polyfit(ampl,duration,2);
-=======
 
     % Linear fit and equation display
     p = polyfit(ampl, duration2, 1);
->>>>>>> Stashed changes
     eqn = poly2sym(p);
-    
+    subtitle(char(vpa(eqn, 2)))
 
     % Calculate MSE for duration
     yfit = polyval(p, ampl);
@@ -49,14 +32,14 @@ function [ampl, vpeak, duration, mse_duration, mse_vpeak] = main_sequence(time_s
     plot(xest, yest, '-w');
 
     title(eye + " eye")
-    subtitle(char(vpa(eqn, 2))+ ", MSE: "+ mse_duration)
+    subtitle("MSE: "+ mse_duration)
 
     % Second subplot: Amplitude vs. Peak Velocity
     nexttile   
     scatter(ampl, vpeak, 15, tsac, 'filled')
     set(gca, 'Color', 'k')
     colormap spring
-    ylabel(cbar, "Time (milliseconds)");
+    ylabel(cbar, "Time (seconds)");
     xlabel("Amplitude (deg)")
     ylabel("Peak velocity (deg/s)")
 
@@ -67,6 +50,7 @@ function [ampl, vpeak, duration, mse_duration, mse_vpeak] = main_sequence(time_s
     yfit2 = polyval(p2, ampl);
     mse_vpeak = mean((vpeak - yfit2).^2);
 
+    subtitle(char(vpa(eqn2, 2) +", MSE: " + mse_vpeak))
 
    
     % Plot linear fit
@@ -74,8 +58,6 @@ function [ampl, vpeak, duration, mse_duration, mse_vpeak] = main_sequence(time_s
     yest2 = polyval(p2, xest2);
     hold on
     plot(xest2, yest2, '-w');
-
-    subtitle(char(vpa(eqn2, 2)) +", MSE: " + mse_vpeak)
 
     title(eye + " eye")
     

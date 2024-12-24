@@ -28,6 +28,7 @@ while true
     [sacctimes_left,swjdata_left,leftsacc,tsacleft] = swj(leftsacc,left);
     [sacctimes_right,swjdata_right,rightsacc,tsacright] = swj(rightsacc,right);
     close all
+    set(0,'DefaultFigureWindowStyle','docked')
     figure(1); 
     set(gcf, 'Name', "Square Wave Jerks");  % Set the name and remove the default number) 
     tiledlayout(2,1)

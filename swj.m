@@ -2,7 +2,7 @@ function [sacctimes, swj_data, sac,tsac] = swj(sac, time_series)
 
     % Parameters
     min_ampl = 0.4;
-    sacc_similarity = 1;
+    sacc_difference_threshold = 0.2;
     max_duration = 500;
     min_duration = 100;
 
@@ -37,11 +37,11 @@ function [sacctimes, swj_data, sac,tsac] = swj(sac, time_series)
 
         % Temporal and spatial constraints
         time_diff = tsac(i+1) - tsac(i);
-        amplitude_similarity = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
+        amplitude_difference = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
 
         if min_duration <= time_diff && time_diff <= max_duration
             if sac(i,4) * sac(i+1,4) < 0 % Opposite directions
-                if amplitude_similarity <= sacc_similarity
+                if amplitude_difference <= sacc_difference_threshold
                    if  isempty(swj_data) || ~any(start2 == sac(i,1))
                     % Mark as SWJ
                     start1 = [start1; sac(i,1)];

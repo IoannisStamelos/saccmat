@@ -29,7 +29,7 @@ function plotswj(time_series, sacctimes, eye)
 
         % Add counting labels for the starts of saccades
         % Labels for saccade 1 starts
-        arrayfun(@(i) text(t(idx_start_1(i)), time_series(idx_start_1(i), 2) + 10, ...
+        arrayfun(@(i) text(t(idx_start_1(i)), time_series(idx_start_1(i), 2) + (3/2*mean(time_series(:,2))), ...
             sprintf('%d', i), 'Color', 'black','FontSize',5), 1:length(idx_start_1));
 
         
