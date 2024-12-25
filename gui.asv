@@ -62,10 +62,12 @@ while true
     %clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
     patient = split(path,'\');
     disp(path)
-    if any(contains(patient, '_'))
+    if exists
     patient = patient(contains(patient, '_'));
-    else
+    disp(patient)
+    catch
     patient = path;
+    disp ("1111")
     end
     tab = table(string(patient),positions(pos), length(leftsacc), length(rightsacc),length(sacctimes_left), length(sacctimes_right),... 
     BCEA_left, BCEA_right, 'VariableNames',["Name", "Position","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"])

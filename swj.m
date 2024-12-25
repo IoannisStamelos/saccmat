@@ -2,7 +2,7 @@ function [sacctimes, swj_data, sac,tsac] = swj(sac, time_series)
 
     % Parameters
     min_ampl = 0.4;
-    amplitude_difference_threshold = 0.3;
+    amplitude_difference_threshold = 0.4;
     angle_opposition_threshold = 160;
     max_duration = 500;
     min_duration = 100;
@@ -41,7 +41,7 @@ function [sacctimes, swj_data, sac,tsac] = swj(sac, time_series)
         amplitude_difference = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
 
         if min_duration <= time_diff && time_diff <= max_duration
-            if sac(i,4) * sac(i+1,4) < 0 % Opposite directions
+            %if sac(i,4) * sac(i+1,4) < 0 % Opposite directions
               if rad2deg(acos(dot(sacc1, sacc2) / (norm(sacc1) * norm(sacc2))))>= angle_opposition_threshold
                 if amplitude_difference <= amplitude_difference_threshold
                    if  isempty(swj_data) || ~any(start2 == sac(i,1))
@@ -52,12 +52,12 @@ function [sacctimes, swj_data, sac,tsac] = swj(sac, time_series)
                     end2 = [end2; sac(i+1,2)];
                     swj_data = [swj_data; sac(i,:); sac(i+1,:)];
                     %disp(abs(theta(i)-theta(i+1)))
-                    disp(rad2deg(acos(dot(sacc1, sacc2) / (norm(sacc1) * norm(sacc2)))))
+                    %disp(rad2deg(acos(dot(sacc1, sacc2) / (norm(sacc1) * norm(sacc2)))))
                    end
 
                  end  
                end
-            end
+            %end
         end
     end
 sacctime = {start1, end1, start2 end2};
