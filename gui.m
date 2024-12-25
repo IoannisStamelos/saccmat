@@ -58,7 +58,7 @@ while true
     
     tab = table(string(path),positions(pos), length(leftsacc), length(rightsacc),length(sacctimes_left), length(sacctimes_right),... 
     BCEA_left, BCEA_right, 'VariableNames',["Name", "Position","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"])
-    
+    figure(1);
     clear i interval_right interval_left folderName samples k_value pos positions 
       break      
 
