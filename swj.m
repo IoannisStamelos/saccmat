@@ -1,21 +1,22 @@
-function [sacctimes, swj_data, sac,tsac] = swj(sac, time_series)
+function [sacctimes, swj_data, sac,tsac_start] = swj(sac, time_series)
 
     % Parameters
     min_ampl = 0.4;
     amplitude_difference_threshold = 0.4;
     angle_opposition_threshold = 160;
-    max_duration = 500;
+    max_duration = 400;
     min_duration = 100;
 
     % Extract time column and compute amplitude
     t = time_series(:,1);
-    ampl = sqrt(sac(:,6).^2 + sac(:,7).^2);
+    ampl = sqrt(sac(:,4).^2 + sac(:,5).^2);
     
     % Filter saccades by amplitude
     valid_idx = ampl > min_ampl;
     sac = [sac(valid_idx,:), ampl(valid_idx)];
     sac = sortrows(sac, 1); % Sort by timestamp
-    tsac = t(sac(:,1));
+    tsac_start = t(sac(:,1));
+    tsac_end = t(sac(:,2));
 
 
     % Initialize outputs
@@ -27,17 +28,16 @@ function [sacctimes, swj_data, sac,tsac] = swj(sac, time_series)
     
     swj_data = [];
     
-    dy_dx = sac(:,5) ./ sac(:,4);
-    theta = rad2deg(atan(dy_dx));
 
     % Iterate through saccades to detect SWJs
     for i = 1:num_saccades - 1
+        
         % Define successive saccades
         sacc1 = [sac(i,4), sac(i,5)];
         sacc2 = [sac(i+1,4), sac(i+1,5)];
         
         % Temporal and spatial constraints
-        time_diff = tsac(i+1) - tsac(i);
+        time_diff = tsac_start(i+1) - tsac_end(i);
         amplitude_difference = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
 
         if min_duration <= time_diff && time_diff <= max_duration

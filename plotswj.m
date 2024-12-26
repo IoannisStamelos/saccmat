@@ -13,7 +13,8 @@ function plotswj(time_series, sacctimes, eye)
         set(0,'DefaultFigureWindowStyle','docked')
         nexttile
         hold on
-        plot(t, time_series(:, 2), 'k-', 'LineWidth', 1); % Original time series
+        plot(t, time_series(:, 2), 'k-', 'LineWidth', 1); 
+        plot(t,time_series(:, 3), 'k--','LineWidth', 0.5);
         
         % Find indices of saccade start and end times
         [~, idx_start_1] = arrayfun(@(x) min(abs(t - x)), sacctimes(:,1));
@@ -37,10 +38,9 @@ function plotswj(time_series, sacctimes, eye)
         subtitle(size(sacctimes,1) + " SWJ")
         
         % Add a legend to clarify the visualization
-        legend({'Horizontal Position', ...
+        legend({'Horizontal Position', 'Vertical Position' ...
                 'Saccade 1 Start (*)', 'Saccade 1 End (>)', ...
-                'Saccade 2 Start (*)', 'Saccade 2 End (>)'}, ...
-                'Location', 'best');
+                'Saccade 2 Start (*)', 'Saccade 2 End (>)'});
         hold off
     end
 end

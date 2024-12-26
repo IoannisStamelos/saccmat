@@ -1,18 +1,28 @@
-function  plotsacc(time_series,sacc,eye)
+function plotsacc(time_series, sacc, eye, samplerate)
+
+% Convert indices to time (milliseconds)
+sacc_time_start = (sacc(:,1) / samplerate) * 1000; % Start times in ms
+sacc_time_end = (sacc(:,2) / samplerate) * 1000;   % End times in ms
 
 t = time_series(:,1);
-tsacc1 = t(sacc(:,1));
-tsacc2 = t(sacc(:,2));
-nexttile
-plot(t,time_series(:,2));
+
+% Create plot
+
+plot(t, time_series(:,2), 'b', 'DisplayName', 'Horizontal Position'); % Horizontal position
 hold on
+plot(t, time_series(:,3), 'r', 'DisplayName', 'Vertical Position');   % Vertical position
 
-[~, idx_start_1] = arrayfun(@(x) min(abs(t - x)), tsacc1);
-[~, idx_end_1] = arrayfun(@(x) min(abs(t - x)), tsacc2);
-        plot(t(idx_start_1), time_series(idx_start_1, 2), 'b*', 'MarkerSize', 5, 'LineWidth', 1); % Starts of saccade 1
-        plot(t(idx_end_1), time_series(idx_end_1, 2), 'b>', 'MarkerSize', 5, 'LineWidth', 1);   % Ends of saccade 1
-        subtitle(eye + " eye, " + height(sacc) + " saccades")
-hold off
-        
+% Plot start points for both horizontal and vertical positions
+plot(sacc_time_start, time_series(sacc(:,1), 2), 'b*', 'MarkerSize', 5, 'DisplayName', 'Start Horizontal'); % Start (Horizontal)
+plot(sacc_time_start, time_series(sacc(:,1), 3), 'r*', 'MarkerSize', 5, 'DisplayName', 'Start Vertical');   % Start (Vertical)
+
+% Plot end points for both horizontal and vertical positions
+plot(sacc_time_end, time_series(sacc(:,2), 2), 'b>', 'MarkerSize', 5, 'DisplayName', 'End Horizontal');   % End (Horizontal)
+plot(sacc_time_end, time_series(sacc(:,2), 3), 'r>', 'MarkerSize', 5, 'DisplayName', 'End Vertical');     % End (Vertical)
+
+% Add subtitle and legend
+subtitle(eye + " eye, " + height(sacc) + " saccades");
+legend('Location', 'best');
+hold off 
+
 end
-

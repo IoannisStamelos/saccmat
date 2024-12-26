@@ -1,12 +1,3 @@
-
-while true
-        path = uigetdir();
-        if isequal(path,0)
-            disp('User cancelled. Exiting.');
-            break
-        end
-           disp(['File folder: ', path]);
-           
     % 1.Preprocess    
         [left,right,samplerate] = preprocess(path);
         positions =  [" Center", " Left", " Right", " Up", " Down"];
@@ -79,8 +70,3 @@ while true
     BCEA_left, BCEA_right, 'VariableNames',["Name", "Position","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"])
     figure(1);
     clear i interval_right interval_left folderName samples k_value pos positions 
-      break      
-      
-    
-
-end

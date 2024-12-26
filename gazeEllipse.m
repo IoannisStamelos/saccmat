@@ -53,7 +53,7 @@ ylabel('Vertical');
 title(['Gaze Ellipse - Area: ' num2str(ellipse_area, '%.2f') ' (deg²)'], "BCEA: " + BCEA + ', '+ eye +" eye");  % Add area to title
 cbar = colorbar;
 colormap winter
-ylabel(cbar, "Time (seconds)");
+ylabel(cbar, "Time (milliseconds)");
 legend("Screen Pointer","Eye position","Density Ellipse","Mean Gaze Point")
 
 hold off;
