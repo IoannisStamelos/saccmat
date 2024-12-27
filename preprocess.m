@@ -52,7 +52,7 @@ right = [t_common', x2_common', y2_common'];
 
 
 
-samplerate = fs_common*1000;
+samplerate = fs_common*1000; %Herz
 
   
     

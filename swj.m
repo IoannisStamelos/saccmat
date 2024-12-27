@@ -1,75 +1,87 @@
 function [sacctimes, swj_data, sac,tsac_start] = swj(sac, time_series)
 
     % Parameters
-    min_ampl = 0.4;
-    amplitude_difference_threshold = 0.5;
-    angle_opposition_threshold = 150;
-    max_duration = 500;
-    min_duration = 80;
+    min_ampl = 0.3; %in degrees
+    amplitude_difference_threshold = 0.2; %(ampl_1 - ampl_2) /(ampl_1 + ampl_2)
+    angle_opposition_threshold = 150; %in degrees
+    max_duration = 500; %in milliseconds
+    min_duration = 80;  %in milliseconds
 
-    % Extract time column and compute amplitude
+    
     t = time_series(:,1);
-    ampl = sqrt(sac(:,6).^2 + sac(:,7).^2);
+    amplitude = sqrt(sac(:,6).^2 + sac(:,7).^2);
     
     % Filter saccades by amplitude
-    valid_idx = ampl > min_ampl;
-    sac = [sac(valid_idx,:), ampl(valid_idx)];
-    sac = sortrows(sac, 1); % Sort by timestamp
-    tsac_start = t(sac(:,1));
-    tsac_end = t(sac(:,2));
+    orig_number = height(sac);
+    valid_idx = amplitude > min_ampl;
+    sac = [sac(valid_idx,:), amplitude(valid_idx)]; %amplitude in last column of sac
+    sac = sortrows(sac, 1); 
+    tsac_start = t(sac(:,1)); %start times of saccades 
+    tsac_end = t(sac(:,2)); %end times of saccades
 
 
-    % Initialize outputs
+   
     num_saccades = size(sac, 1);
     start1 = [];
     start2 = [];
     end1 = [];
     end2 = [];
-    
     swj_data = [];
+    discarded_minampl = orig_number - height(sac);
+    discarded_time = 0;
+    discarded_angle = 0;
+    discarded_ampldiff = 0;
+    discarded_consecutive = 0;
+
+for i = 1:num_saccades - 1
+    saccwOvershoot1 = [sac(i,6), sac(i,7)];
+    saccwOvershoot2 = [sac(i+1,6), sac(i+1,7)];
+    ISI = tsac_start(i+1) - tsac_end(i);
+    amplitude_difference = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
     
-
-    % Iterate through saccades to detect SWJs
-    for i = 1:num_saccades - 1
-        
-        % Define successive saccades
-        sacc1 = [sac(i,4), sac(i,5)];
-        sacc2 = [sac(i+1,4), sac(i+1,5)];
-        saccwOvershoot1 = [sac(i,6),sac(i,7)];
-        saccwOvershoot2 = [sac(i+1,6),sac(i+1,7)];
-        % Temporal and spatial constraints
-        time_diff = tsac_start(i+1) - tsac_end(i);
-        amplitude_difference = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
-
-        if min_duration <= time_diff && time_diff <= max_duration
-            %if sac(i,4) * sac(i+1,4) < 0 % Opposite directions
-              if rad2deg(acos(dot(saccwOvershoot1, saccwOvershoot2) / (norm(saccwOvershoot1) * norm(saccwOvershoot2))))>= angle_opposition_threshold
-                if amplitude_difference <= amplitude_difference_threshold
-                   if  isempty(swj_data) || ~any(start2 == sac(i,1))
-                    % Mark as SWJ
-                    start1 = [start1; sac(i,1)];
-                    end1 = [end1; sac(i,2)];
-                    start2 = [start2; sac(i+1,1)];
-                    end2 = [end2; sac(i+1,2)];
-                    swj_data = [swj_data; sac(i,:); sac(i+1,:)];
-                    %disp(abs(theta(i)-theta(i+1)))
-                    %disp(rad2deg(acos(dot(sacc1, sacc2) / (norm(sacc1) * norm(sacc2)))))
-                   end
-
-                 end  
-               end
-            %end
-        end
+    % Check Intersaccadic interval
+    if ISI < min_duration || ISI > max_duration
+        discarded_time = discarded_time + 1;
+        continue;
     end
+    
+    % Check Angle Opposition
+    cos_theta = dot(saccwOvershoot1, saccwOvershoot2) / (norm(saccwOvershoot1) * norm(saccwOvershoot2));
+    cos_theta = max(-1, min(1, cos_theta)); % Clamp values
+    angle = rad2deg(acos(cos_theta));
+    if angle < angle_opposition_threshold
+        discarded_angle = discarded_angle + 1;
+        continue;
+    end
+    
+    % Check Amplitude Difference
+    if amplitude_difference > amplitude_difference_threshold
+        discarded_ampldiff = discarded_ampldiff + 1;
+        continue;
+    end
+    
+    % Discard oscillations 
+    if ~isempty(swj_data) && any(start2 == sac(i,1))
+        discarded_consecutive = discarded_consecutive +1;
+        continue
+    else
+        start1 = [start1; sac(i,1)];
+        end1 = [end1; sac(i,2)];
+        start2 = [start2; sac(i+1,1)];
+        end2 = [end2; sac(i+1,2)];
+        swj_data = [swj_data; sac(i,:); sac(i+1,:)];
+    end
+end
 sacctime = {start1, end1, start2 end2};
 sacctimes = [];
 for i = 1:length(sacctime)
     sacctime{i} = nonzeros(t(sacctime{i}));
-    % Finalize outputs
-    sacctimes = horzcat(sacctimes,sacctime{i});
+    sacctimes = horzcat(sacctimes,sacctime{i}); % (n,4) matrix
     
-
 end
-
+%discarded = {discarded_minampl,discarded_time,discarded_angle,discarded_ampldiff,discarded_consecutive}
+discarded = table(discarded_minampl, discarded_time, discarded_angle, discarded_ampldiff, discarded_consecutive, ...
+    'VariableNames',["too small", "too close or far apart", "too acute", "too different", "consecutive"])
+%disp([discarded_minampl discarded_time discarded_angle discarded_ampldiff discarded_consecutive])
 
 end

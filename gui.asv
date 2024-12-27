@@ -1,3 +1,12 @@
+
+while true
+        path = uigetdir();
+        if isequal(path,0)
+            disp('User cancelled. Exiting.');
+            break
+        end
+           disp(['File folder: ', path]);
+           
     % 1.Preprocess    
         [left,right,samplerate] = preprocess(path,"pchip");
         positions =  [" Center", " Left", " Right", " Up", " Down"];
@@ -40,8 +49,8 @@
        
     
     % 4.BCEA
-    BCEA_left = compute_BCEA(left, 0.95);
-    BCEA_right = compute_BCEA(right, 0.95);
+    BCEA_left = compute_BCEA(left,'conf_int', 0.95);
+    BCEA_right = compute_BCEA(right,'conf_int', 0.95);
     
     % 5.Density Ellipses
     figure('Name',"Fixation Ellipse")
@@ -68,4 +77,9 @@
     tab = table(string(patient),positions(pos), length(leftsacc), length(rightsacc),length(sacctimes_left), length(sacctimes_right),... 
     BCEA_left, BCEA_right, 'VariableNames',["Name", "Position","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"])
     figure(1);
-    clear i interval_right interval_left folderName samples k_value pos positions
+    clear i interval_right interval_left folderName samples k_value pos positions 
+      break      
+      
+    
+
+end

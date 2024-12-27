@@ -8,7 +8,7 @@ while true
            disp(['File folder: ', path]);
            
     % 1.Preprocess    
-        [left,right,samplerate] = preprocess(path);
+        [left,right,samplerate] = preprocess(path,"pchip");
         positions =  [" Center", " Left", " Right", " Up", " Down"];
         [~, folderName] = fileparts(path);  
         folderName = string(folderName);
@@ -49,9 +49,8 @@ while true
        
     
     % 4.BCEA
-    k_value = 2.99573; % Default for 95% confidence interval
-    [BCEA_left, ~] = compute_BCEA(left, 2, k_value);
-    [BCEA_right, ~] = compute_BCEA(right, 2, k_value);
+    BCEA_left = compute_BCEA(left, 0.95);
+    BCEA_right = compute_BCEA(right, 0.95);
     
     % 5.Density Ellipses
     figure('Name',"Fixation Ellipse")

@@ -28,10 +28,10 @@ function plotswj(time_series, sacctimes, eye)
         plot(t(idx_start_2), time_series(idx_start_2, 2), 'r*', 'MarkerSize', 5, 'LineWidth', 1); % Starts of saccade 2
         plot(t(idx_end_2), time_series(idx_end_2, 2), 'r>', 'MarkerSize', 5, 'LineWidth', 1);   % Ends of saccade 2
         % Vertical
-        plot(t(idx_start_1), time_series(idx_start_1, 3), 'b*', 'MarkerSize', 3, 'LineWidth', 1); % Starts of saccade 1
-        plot(t(idx_end_1), time_series(idx_end_1, 3), 'b>', 'MarkerSize', 3, 'LineWidth', 1);   % Ends of saccade 1
-        plot(t(idx_start_2), time_series(idx_start_2, 3), 'r*', 'MarkerSize', 3, 'LineWidth', 1); % Starts of saccade 2
-        plot(t(idx_end_2), time_series(idx_end_2, 3), 'r>', 'MarkerSize', 3, 'LineWidth', 1);   % Ends of saccade 2
+        plot(t(idx_start_1), time_series(idx_start_1, 3), 'b*', 'MarkerSize', 5, 'LineWidth', 1); % Starts of saccade 1
+        plot(t(idx_end_1), time_series(idx_end_1, 3), 'b>', 'MarkerSize', 5, 'LineWidth', 1);   % Ends of saccade 1
+        plot(t(idx_start_2), time_series(idx_start_2, 3), 'r*', 'MarkerSize', 5, 'LineWidth', 1); % Starts of saccade 2
+        plot(t(idx_end_2), time_series(idx_end_2, 3), 'r>', 'MarkerSize', 5, 'LineWidth', 1);   % Ends of saccade 2
 
         % Add counting labels for the starts of saccades
         arrayfun(@(i) text(t(idx_start_1(i)), time_series(idx_start_1(i), 2) + (3/2*mean(time_series(:,2))), ...
