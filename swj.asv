@@ -2,14 +2,14 @@ function [sacctimes, swj_data, sac,tsac_start] = swj(sac, time_series)
 
     % Parameters
     min_ampl = 0.4;
-    amplitude_difference_threshold = 0.5;
-    angle_opposition_threshold = 150;
-    max_duration = 500;
-    min_duration = 80;
+    amplitude_difference_threshold = 0.4;
+    angle_opposition_threshold = 160;
+    max_duration = 400;
+    min_duration = 100;
 
     % Extract time column and compute amplitude
     t = time_series(:,1);
-    ampl = sqrt(sac(:,6).^2 + sac(:,7).^2);
+    ampl = sqrt(sac(:,4).^2 + sac(:,5).^2);
     
     % Filter saccades by amplitude
     valid_idx = ampl > min_ampl;
@@ -35,15 +35,14 @@ function [sacctimes, swj_data, sac,tsac_start] = swj(sac, time_series)
         % Define successive saccades
         sacc1 = [sac(i,4), sac(i,5)];
         sacc2 = [sac(i+1,4), sac(i+1,5)];
-        saccwOvershoot1 = [sac(i,6),sac(i,7)];
-        saccwOvershoot2 = [sac(i+1,6),sac(i+1,7)];
+        saccwO
         % Temporal and spatial constraints
         time_diff = tsac_start(i+1) - tsac_end(i);
         amplitude_difference = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
 
         if min_duration <= time_diff && time_diff <= max_duration
             %if sac(i,4) * sac(i+1,4) < 0 % Opposite directions
-              if rad2deg(acos(dot(saccwOvershoot1, saccwOvershoot2) / (norm(saccwOvershoot1) * norm(saccwOvershoot2))))>= angle_opposition_threshold
+              if rad2deg(acos(dot(sacc1, sacc2) / (norm(sacc1) * norm(sacc2))))>= angle_opposition_threshold
                 if amplitude_difference <= amplitude_difference_threshold
                    if  isempty(swj_data) || ~any(start2 == sac(i,1))
                     % Mark as SWJ

@@ -13,7 +13,7 @@ function plotswj(time_series, sacctimes, eye)
         set(0,'DefaultFigureWindowStyle','docked')
         nexttile
         hold on
-        plot(t, time_series(:, 2), 'k-', 'LineWidth', 1); 
+        plot(t, time_series(:, 2), 'k-', 'LineWidth', 1.5); 
         plot(t,time_series(:, 3), 'k--','LineWidth', 0.5);
         
         % Find indices of saccade start and end times
