@@ -28,7 +28,7 @@ function [sac, radius] = microsacc(x, vel, VFAC, MINDUR, blink, ANGTHRESH)
 %  ADDED BY JORGE OTERO-MILLAN 
 %  sac(1:num,8)   mean velocity of the saccade
 %  ADDED BY IOANNIS STAMELOS
-%  sac(1:num,9:12)  x(start, end) and y(start, end)   (x1,x2,y1,y2)
+%  sac(1:num,9)   saccade angle (in deg) (theta)
 %
 %---------------------------------------------------------------------
 
@@ -115,6 +115,6 @@ for s = 1:nsac
     sac(s, 6:7) = [dX dY];  
     % Optionally, include more columns
     sac(s, 8) = mean(sqrt(vel(a:b, 1).^2 + vel(a:b, 2).^2));  % Mean velocity
-    sac(s, 9:12) = [x(a, 1), x(b, 1), x(a, 2), x(b, 2)];  % Start and end positions
+    sac(s,9) = rad2deg(atan2(dy, dx)); 
 end
 end

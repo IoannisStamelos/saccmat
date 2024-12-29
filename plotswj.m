@@ -4,7 +4,7 @@ function plotswj(time_series, sacctimes, eye)
     if isempty(sacctimes)
         disp("No SWJs detected.")
         figure('Name','Horizontal')
-        title("Horizontal" + eye)
+        title("Horizontal " + eye)
         set(0,'DefaultFigureWindowStyle','docked')
         plot(t,time_series(:,2))
         xlabel("seconds")
@@ -37,7 +37,7 @@ function plotswj(time_series, sacctimes, eye)
         arrayfun(@(i) text(t(idx_start_1(i)), time_series(idx_start_1(i), 2) + (3/2*mean(time_series(:,2))), ...
             sprintf('%d', i), 'Color', 'black','FontSize',7), 1:length(idx_start_1));
 
-        
+        title(eye + " eye")
         subtitle(size(sacctimes,1) + " SWJ")
         
         % Add a legend to clarify the visualization
