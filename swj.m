@@ -1,5 +1,9 @@
 function [sacctimes, swj_data, sac,tsac_start] = swj(sac, time_series,horizontal)
-
+if nargin>2 && contains(horizontal,'horizontal','IgnoreCase',true)
+    opposition_criterion = "Horizontal_component";
+else 
+    opposition_criterion = "2d Saccade";
+end
     % Parameters
     min_ampl = 0.4; %in degrees
     max_ampl = 5;
@@ -7,11 +11,8 @@ function [sacctimes, swj_data, sac,tsac_start] = swj(sac, time_series,horizontal
     angle_opposition_threshold = 150; %in degrees
     max_duration = 500; %in milliseconds
     min_duration = 100;  %in milliseconds
-    if nargin>2 && contains(horizontal,'horizontal','IgnoreCase',true)
-        amplitude = sac(:,6);
-    else
-        amplitude = sqrt(sac(:,6).^2 + sac(:,7).^2);
-    end
+    amplitude = sqrt(sac(:,6).^2 + sac(:,7).^2);
+ 
 
 
     
@@ -45,8 +46,11 @@ for i = 1:num_saccades - 1
     saccwOvershoot1 = [sac(i,6), sac(i,7)];
     saccwOvershoot2 = [sac(i+1,6), sac(i+1,7)];
     ISI = tsac_start(i+1) - tsac_end(i);
-    amplitude_difference = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
-    
+    if opposition_criterion == "Horizontal_component"
+        amplitude_difference = abs(sac(i,6) - sac(i+1,6)) / (sac(i,6) + sac(i+1,6));
+    elseif opposition_criterion == "2d Saccade"
+        amplitude_difference = abs(sac(i,end) - sac(i+1,end)) / (sac(i,end) + sac(i+1,end));
+    end
     % Check Intersaccadic interval
     if ISI < min_duration || ISI > max_duration
         discarded_time = discarded_time + 1;
@@ -54,11 +58,11 @@ for i = 1:num_saccades - 1
     end
     
     % Check Angle Opposition
-    if nargin>2 && contains(horizontal,'horizontal','IgnoreCase',true)
+    if opposition_criterion == "Horizontal_component"
         cos_theta = dot([sac(i,6), 0],[sac(i+1,6),0]) / (norm([sac(i,6), 0]) * norm([sac(i+1,6),0]));
         cos_theta = max(-1, min(1, cos_theta)); % Clamp values
         angle = rad2deg(acos(cos_theta));
-    else 
+    elseif opposition_criterion == "2d Saccade"
         cos_theta = dot(saccwOvershoot1, saccwOvershoot2) / (norm(saccwOvershoot1) * norm(saccwOvershoot2));
         cos_theta = max(-1, min(1, cos_theta)); % Clamp values
         angle = rad2deg(acos(cos_theta));
@@ -76,7 +80,7 @@ for i = 1:num_saccades - 1
     end
     
     % Discard oscillations 
-    if ~isempty(swj_data) && any(start2 == sac(i,1))
+    if ~isempty(swj_data) && any(start2 == sac(i,1)) 
         discarded_consecutive = discarded_consecutive +1;
         continue
     else
@@ -85,6 +89,7 @@ for i = 1:num_saccades - 1
         start2 = [start2; sac(i+1,1)];
         end2 = [end2; sac(i+1,2)];
         swj_data = [swj_data; sac(i,:); sac(i+1,:)];
+        
     end
 end
 sacctime = {start1, end1, start2 end2};
@@ -97,7 +102,9 @@ end
 %discarded = {discarded_minampl,discarded_time,discarded_angle,discarded_ampldiff,discarded_consecutive}
 discarded = table(discarded_minampl, discarded_time, discarded_angle, discarded_ampldiff, discarded_consecutive, ...
     'VariableNames',["wrong size", "wrong timing", "wrong angle", "too different", "consecutive"])
-swj_data = array2table(swj_data,"VariableNames",["SaccadeStartIdx","SaccadeEndIdx","Vpeak","dx","dy","dx_max","dy_max", "Vmean","Angle","Amplitude"]);
+if ~isempty(swj_data)
+    swj_data = array2table(swj_data, VariableNames = ["SaccadeStartIdx","SaccadeEndIdx","Vpeak","dx","dy","dx_max","dy_max", "Vmean","Angle","Amplitude"]);
+end
 %disp([discarded_minampl discarded_time discarded_angle discarded_ampldiff discarded_consecutive])
 
 end
