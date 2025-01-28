@@ -80,9 +80,13 @@ while true
     leftsacc = array2table(leftsacc,"VariableNames",["SaccadeStartIdx","SaccadeEndIdx","Vpeak","dx","dy","dx_max","dy_max", "Vmean","Angle","Amplitude"]);
     rightsacc = array2table(rightsacc,"VariableNames",["SaccadeStartIdx","SaccadeEndIdx","Vpeak","dx","dy","dx_max","dy_max","Vmean","Angle","Amplitude"]);
     figure(1);
+    filename = input("file name");
+    folder = uigetdir();
+    name = fullfile(folder, filename+".xlsx");
+    writetable(tab, name);
     clear i interval_right interval_left folderName samples k_value pos positions 
       break      
-      
+    
     
 
 end
