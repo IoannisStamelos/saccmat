@@ -1,6 +1,8 @@
-
+if ~exist("patientfolder", "var")
+patientfolder = uigetdir("","Choose where to save results");
+end
 while true
-        path = uigetdir();
+        path = uigetdir("","Choose patient file");
         if isequal(path,0)
             disp('User cancelled. Exiting.');
             break
@@ -38,8 +40,8 @@ while true
     
        
     % 3.Square Wave Jerks  
-    [sacctimes_left,swjdata_left,leftsacc,tsacleft] = swj(leftsacc,left,"horizontal");
-    [sacctimes_right,swjdata_right,rightsacc,tsacright] = swj(rightsacc,right,"horizontal");
+    [sacctimes_left,swjdata_left,leftsacc,tsacleft] = swj(leftsacc,left);
+    [sacctimes_right,swjdata_right,rightsacc,tsacright] = swj(rightsacc,right);
     
     figure
     set(gcf, 'Name', "Square Wave Jerks"); 
@@ -80,9 +82,22 @@ while true
     leftsacc = array2table(leftsacc,"VariableNames",["SaccadeStartIdx","SaccadeEndIdx","Vpeak","dx","dy","dx_max","dy_max", "Vmean","Angle","Amplitude"]);
     rightsacc = array2table(rightsacc,"VariableNames",["SaccadeStartIdx","SaccadeEndIdx","Vpeak","dx","dy","dx_max","dy_max","Vmean","Angle","Amplitude"]);
     figure(1);
-    name = fullfile(folderame,patient);
- name = fullfile(folderName, [patient, '.xlsx']);
-writetable(tab, name, 'Sheet', 'Summary');
+    filename = string(inputdlg("Name the file (a left and a right file will be created)"));
+    swjdata_right1stsacc = swjdata_right(1:2:end-1,:);
+    swjdata_left1stsacc = swjdata_left(1:2:end-1,:);
+    swjdata_left1stsacc(:,1) =  swjdata_left1stsacc(:,1)./samplerate;
+    swjdata_left1stsacc(:,2) =  swjdata_left1stsacc(:,2)./samplerate;
+    swjdata_right1stsacc(:,1) = swjdata_right1stsacc(:,1)./samplerate;
+    swjdata_right1stsacc(:,2) = swjdata_right1stsacc(:,2)./samplerate;
+    
+    exportleft = table(swjdata_left1stsacc);
+    exportright = table(swjdata_right1stsacc);
+    mkdir(patientfolder, filename);
+    leftname = patientfolder +"\"+ filename + "\swj_" + filename +"_LeftEye.xlsx";
+    disp(leftname)
+    rightname = patientfolder +"\"+ filename + "\swj_" + filename +"_RightEye.xlsx";
+    writetable(exportle, leftname);
+    writetable(swjdata_right, rightname);
     clear i interval_right interval_left folderName samples k_value pos positions 
       break      
     

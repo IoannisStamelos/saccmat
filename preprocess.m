@@ -1,6 +1,6 @@
 function [left, right, samplerate] = preprocess(path, method)
     % Set default interpolation method
-    if nargin < 2 || isempty(method)
+    if nargin < 2 & isempty(method)
         method = 'nearest';
     end
     

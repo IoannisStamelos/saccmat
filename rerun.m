@@ -1,5 +1,5 @@
-    % 1.Preprocess    
-        [left,right,samplerate] = preprocess(path,"pchip");
+  % 1.Preprocess    
+        [left,right,samplerate] = preprocess(path,"nearest");
         positions =  [" Center", " Left", " Right", " Up", " Down"];
         [~, folderName] = fileparts(path);  
         folderName = string(folderName);
@@ -29,8 +29,8 @@
     
        
     % 3.Square Wave Jerks  
-    [sacctimes_left,swjdata_left,leftsacc,tsacleft] = swj(leftsacc,left);
-    [sacctimes_right,swjdata_right,rightsacc,tsacright] = swj(rightsacc,right);
+    [sacctimes_left,swjdata_left,leftsacc,tsacleft] = swj(leftsacc,left,"horizontal");
+    [sacctimes_right,swjdata_right,rightsacc,tsacright] = swj(rightsacc,right,"horizontal");
     
     figure
     set(gcf, 'Name', "Square Wave Jerks"); 
@@ -54,8 +54,8 @@
 
     figure('Name',"Main Sequence")
     tiledlayout(2,2)
-    [ampl_L,vpeak_L,duration_L] = main_sequence(left,leftsacc,"Left",tsacleft,samplerate);
-    [ampl_R,vpeak_R,duration_R] = main_sequence(right,rightsacc,"Right",tsacright,samplerate);
+    [duration_L] = main_sequence(left,leftsacc,"Left",tsacleft);
+    [duration_R] = main_sequence(right,rightsacc,"Right",tsacright);
 
     %clearvars -except left right samplerate rightsacc leftsacc swjons_left swjfin_left swjdata_left swjons_right swjfin_right swjdata_right
     patient = split(path,'\');
@@ -65,7 +65,13 @@
     else
     patient = path;
     end
-    tab = table(string(patient),positions(pos), length(leftsacc), length(rightsacc),length(sacctimes_left), length(sacctimes_right),... 
-    BCEA_left, BCEA_right, 'VariableNames',["Name", "Position","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"])
+    tab = table(string(patient), length(leftsacc), length(rightsacc),length(sacctimes_left), length(sacctimes_right),... 
+    BCEA_left, BCEA_right, VariableNames=["Name","Left Saccades","Right Saccades","Left SWJ","Right SWJ","Left BCEA","Right BCEA"])
+
+    leftsacc = array2table(leftsacc,"VariableNames",["SaccadeStartIdx","SaccadeEndIdx","Vpeak","dx","dy","dx_max","dy_max", "Vmean","Angle","Amplitude"]);
+    rightsacc = array2table(rightsacc,"VariableNames",["SaccadeStartIdx","SaccadeEndIdx","Vpeak","dx","dy","dx_max","dy_max","Vmean","Angle","Amplitude"]);
     figure(1);
-    clear i interval_right interval_left folderName samples k_value pos positions
+    clear i interval_right interval_left folderName samples k_value pos positions 
+           
+      
+    
